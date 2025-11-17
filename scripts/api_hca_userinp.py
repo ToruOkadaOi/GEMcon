@@ -1,5 +1,6 @@
-#--- code written with .loom files in mind i.e DCP processed matrix with just 1 file in the project. Many projects have multiple count matrix files. # TODO: think of scrapping all this together if user is going to use those instead ## add before pd.DataFrame printing ---#
-#TODO: make changes to download locations
+#--- code written with .loom files in mind i.e DCP processed matrix with just 1 file in the project.  
+# TODO: Many projects have multiple count matrix files (if intend on using .mtx and its variants). Think of scrapping all this together if user is going to use those instead ## add before pd.DataFrame printing ---#
+# TODO: download meter, nudge to use tmux, faster downloads??
 
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -13,6 +14,11 @@ import pandas as pd
 import os
 import ast
 import logging
+from rich import print
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
 
 class File(BaseModel):
     name: str
@@ -51,7 +57,7 @@ supported_fields = [
 ]
 
 # ask user
-path = input("\nPath to a config file for filtering (press Enter for manual input): ").strip()
+path = input("\nPath to a config file for filtering (press Enter for manual input): \n").strip()
 
 # init dict for filter
 filters = {}
@@ -63,7 +69,11 @@ if path and os.path.isfile(path):
     print(f"\nLoaded filters from {path}")
 else:
     # print available fields
-    print("\nSupported fields:\n" + ", ".join(supported_fields))
+    #print("\nSupported fields:\n" + ", ".join(supported_fields))
+    console.rule("[bold green]\nSupported Fields")
+    console.print() 
+    console.print(", ".join(supported_fields))
+    console.print() 
 
     # get input for which fields to select
     chosen = input("\nEnter fields to filter (comma separated, e.g. fileFormat,genusSpecies,isIntermediate, fileSource): ").strip()
@@ -77,7 +87,7 @@ else:
             continue
 
         # get input for getting the values for the fields selected in the step b4
-        val = input(f"Enter value(s) for '{f}' (comma separated, True/False if applicable): ").strip()
+        val = input(f"\nEnter value(s) for '{f}' (comma separated, True/False if applicable): \n").strip()
 
         if not val:
             continue
@@ -89,8 +99,12 @@ else:
             filters[f] = {"is": [v.strip() for v in val.split(",") if v.strip()]}
 
 # logging.info
-print("\nUsing filters:")
-print(json.dumps(filters, indent=2))
+# print("\nUsing filters:")
+# print(json.dumps(filters, indent=2))
+console.rule("[bold cyan]\nUsing filters")
+console.print() 
+console.print(filters)
+console.print() 
 
 size=100
 catalog = "dcp54"
@@ -102,7 +116,8 @@ def fetch_all_pages(catalog=catalog, filters=filters, size=50):
     hits, url, page = [], base_url, 1 # empty list to store evrytg
 
     while url:
-        print(f"page {page}")
+        #print(f"page {page}")
+        console.print(f"[yellow]Page {page}[/yellow]")
         r = requests.get(url, params=params if url == base_url else None)
         # stat at this point
         ## logging.error here
@@ -126,7 +141,8 @@ raw_hits, facets = fetch_all_pages()
 #raw_hits = fetch_all_pages()
 hits = [Hit(**h) for h in raw_hits]
 # logging.info
-print("pydantic validated:", len(hits))
+#print("pydantic validated:", len(hits))
+console.print(f"[green]\nNumber of pages validated:[/green] {len(hits)}")
 
 formats = facets["fileFormat"]["terms"]
 formats_pd = pd.DataFrame(formats)
@@ -208,7 +224,11 @@ os.makedirs(save_dir, exist_ok=True)
 
 # allow user to specify
 pd.set_option('display.max_rows', None)
-print(df[["File", "Organ", "Disease"]].reset_index())
+#print(df[["File", "Organ", "Disease"]].reset_index())
+console.rule("[bold magenta]\nAvailable Files")
+console.print() 
+console.print(df[["File", "Organ", "Disease"]].reset_index())
+console.print() 
 #pd.reset_option("display.max_rows")
 choice = int(input("\nWhich file to download? Enter the index: "))
 
@@ -218,11 +238,14 @@ filename = os.path.join(save_dir, df.loc[choice, 'File'] or f"file_{choice+1}")
 df.to_csv(os.path.join(save_dir, "metadata.csv"), index=False)
 
 # logging.info
-print(f"\nDownloading: {filename}")
+#print(f"\nDownloading: {filename}")
+console.rule("[bold blue]Downloading File")
+console.print(filename)
 
 asyncio.run(download_file(url, filename))
 # logging.info
-print("\nSuccess.")
+#print("\nSuccess.")
+console.print("[green]Download complete[/green]")
 
 # To play nice with workflow.py
 with open("data_raw/_last_downloaded.txt", "w") as f:

@@ -2,9 +2,12 @@ import scanpy as sc
 import pandas as pd, numpy as np
 import os
 
-choice = input("\nProvide the complete path to the log1p normalized h5ad file: ")
+choice = input("\nProvide the complete path to the .h5ad or .loom: ") # log1p norm'ed
 
-adata = sc.read_h5ad(f"{choice}")
+if os.path.splitext(os.path.basename(choice))[-1] == '.loom':
+    adata = sc.read_loom(f"{choice}")
+else:
+    adata = sc.read_h5ad(f"{choice}")
 
 # base name from input file
 base = os.path.splitext(os.path.basename(choice))[0]
@@ -40,14 +43,19 @@ genes = adata.var_names
 
 # if no column given, pool all cells
 if not col:
-    # Should I change to array here?
+    # # sum raw counts and convert to CPM; Should I change to array here?
     x = adata.layers["raw_counts"].toarray().sum(axis=0).flatten()
     cpm = x / x.sum() * 1e6
-    pd.DataFrame({"gene": genes, "expression": cpm}).to_csv("expression_data.csv", index=False)
-    print("Saved: expression_data.csv")
+
+    os.makedirs("data_processed", exist_ok=True)
+    output_path = f"data_processed/expression_data_{base}.csv"
+
+    pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(output_path, index=False)
+    print(f"Saved: {output_path}")
 
 else:
-    os.makedirs("expression_by_celltype", exist_ok=True) # file name identifier -> f string
+    outdir = f"data_processed/expression_by_celltype_{base}"
+    os.makedirs(outdir, exist_ok=True)
     for t in adata.obs[col].unique():
         # subset for this cell type
         sub = adata[adata.obs[col] == t]
@@ -58,12 +66,13 @@ else:
         
         # sanitize name
         safe_name = str(t).replace(' ', '_').replace('/', '_').replace('\\', '_')
+
+        # path for save
+        output_path = f"{outdir}/{safe_name}.csv"
         
-        # save file
-        pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(
-            f"expression_by_celltype/{safe_name}.csv", index=False
-        )
-        print("Saved:", t)
+        # save files
+        pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(output_path, index=False)
+        print(f"Saved: {output_path}")
 
 #--- normalize ---
 #import pandas as pd, numpy as np
@@ -76,3 +85,5 @@ else:
 
 # export
 #pd.DataFrame({"gene": genes, "expression": cpm}).to_csv("expression_data.csv", index=False)
+
+# api_hca_userinp.py -> norm_pre.py -> genetoenseml.py -> gimme/tINIT

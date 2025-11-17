@@ -40,14 +40,16 @@ def main():
 
     # branch A
     if args.branch == "celltype_annotated":
-        run(["python", "scripts/scanpy_norm.py", input_file])
-        run(["python", "scripts/annotate_celltypes.py"])
+        run(["bash", "scripts/run_in_scanpy.sh", "scripts/scanpy_norm.py", input_file])
+        run(["bash", "scripts/run_in_scanpy.sh", "scripts/annotate_celltypes.py"])
         return
 
     # branch B
     if args.branch == "metabolic":
         run(["bash", "scripts/run_in_scanpy.sh", "scripts/norm_pre.py", input_file])
+        run(["bash", "scripts/run_in_scanpy.sh", "scripts/genetoensembl.py"]) # I need to run this before context algorithms
         run(["bash", "scripts/run_in_cplex.sh", "scripts/gimme.py"])
+        run(["bash", "scripts/run_in_cplex.sh", "scripts/tinit.py"])
         return
 
 if __name__ == "__main__":
