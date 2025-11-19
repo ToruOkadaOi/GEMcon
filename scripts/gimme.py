@@ -4,23 +4,39 @@ import cobra
 import re
 import os
 import argparse
+import yaml
 from troppo.omics.readers.generic import TabularReader
 from troppo.methods_wrappers import ModelBasedWrapper, ReconstructionWrapper
 from troppo.omics.integration import ContinuousScoreIntegrationStrategy
 from troppo.methods.reconstruction.gimme import GIMME, GIMMEProperties
 
 p = argparse.ArgumentParser()
-p.add_argument("--expr", help="Path to expression CSV") # or just e instead??
+p.add_argument("--expr", help="Path to expression CSV") # or just e instead?? # go cobra-cli subcommands
+p.add_argument("--model", help="Path to the SBML model file")
 args = p.parse_args()
 
-# patt = re.compile('__COBAMPGPRDOT__[0-9]{1}')
-# replace_alt_transcripts = lambda x: patt.sub('', x)
 
-# for recon3d
-patt = re.compile(r'_AT[0-9]+$')
+patt = re.compile('__COBAMPGPRDOT__[0-9]{1}')
 replace_alt_transcripts = lambda x: patt.sub('', x)
 
-model_path = input("\nProvide full path to the SBML model (.xml): ").strip()
+# for recon3d
+# patt = re.compile(r'_AT[0-9]+$')
+# replace_alt_transcripts = lambda x: patt.sub('', x)
+
+if args.model:
+    model_path = args.model.strip()
+else:
+    if os.path.exists("config.yaml"):
+        with open("config.yaml") as f:
+            cfg = yaml.safe_load(f)
+        model_path = cfg.get("model")
+    else:
+        model_path = None
+
+if not model_path:
+    model_path = input("\nProvide full path to the SBML model (.xml): ").strip()
+
+# model_path = input("\nProvide full path to the SBML model (.xml): ").strip()
 if not os.path.exists(model_path):
     raise FileNotFoundError(model_path)
 
@@ -34,7 +50,7 @@ else:
     files = [f for f in os.listdir("data_processed") if f.startswith("expression_data_") and f.endswith("_gencode.csv")]
 
     if not files:
-        expr_path = input("No files found, please provide the abs. path to an expression .csv with gencode symbols: ").strip()
+        expr_path = input("\nNo files found, please provide the abs. path to an expression .csv with gencode symbols: ").strip()
     else:
         paths = [os.path.join("data_processed", f) for f in files]
         expr_path = max(paths, key=os.path.getmtime)
@@ -81,8 +97,8 @@ model = model_wrapper.model_reader.model
 
 # print(model_wrapper.model_reader.r_ids)
 # Get the index of the biomass reaction in the model. This will be used as objective for the GIMME algorithm. # TODO: important
-#idx_objective = model_wrapper.model_reader.r_ids.index('MAR13082') # chaneg each time maybe
-idx_objective = model_wrapper.model_reader.r_ids.index('BIOMASS_reaction')
+idx_objective = model_wrapper.model_reader.r_ids.index('MAR02388') # chaneg each time maybe
+# idx_objective = model_wrapper.model_reader.r_ids.index('BIOMASS_reaction')
 # Create the properties for the GIMME algorithm.
 properties = GIMMEProperties(exp_vector=[v for k, v in scores.items()], obj_frac=0.1, objectives=[{idx_objective: 1}],
                              preprocess=True, flux_threshold=0.25, solver='CPLEX',

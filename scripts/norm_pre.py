@@ -1,9 +1,20 @@
 import scanpy as sc
 import pandas as pd, numpy as np
 import os
+import argparse
 
-choice = input("\nProvide the complete path to the .h5ad or .loom: ") # log1p norm'ed
+p = argparse.ArgumentParser()
+p.add_argument("--input")
+p.add_argument("--celltype")
+args = p.parse_args()
 
+# This is to make sure it receives the original input at the beginning from the user. option for interactive input in case using this as a single script
+if args.input:
+    choice = args.input.strip()
+else:
+    choice = input("\nProvide the complete path to the .h5ad or .loom: ") # log1p norm'ed
+
+# determine .loom or .h5ad
 if os.path.splitext(os.path.basename(choice))[-1] == '.loom':
     adata = sc.read_loom(f"{choice}")
 else:
@@ -36,7 +47,10 @@ print(adata.obs) # see if there is cell types
 print("obs columns:", adata.obs.columns.tolist())
 
 # user input
-col = input("\nEnter the column name for pooling-by-celltype (press Enter to pool all): ").strip()
+if args.celltype is not None:
+    col = args.celltype.strip()
+else:
+    col = input("\nEnter the column name for pooling-by-celltype (press Enter to pool all): ").strip()
 
 # gene names usually stored in .var
 genes = adata.var_names

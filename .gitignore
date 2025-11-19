@@ -4,14 +4,11 @@ data_raw/
 data_processed/
 processed/
 organized/
+notebooks/
+expression_by_celltype/
+ipynb_checkpoints/
 
-models/*.xml
-models/*.tsv
-models/*.lp
-models/*.mat
-models/*.pickle
-models/*.pkl
-!models/README.md
+#models/
 
 *.loom
 *.h5ad

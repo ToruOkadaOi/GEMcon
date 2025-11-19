@@ -1,3 +1,6 @@
+__author__ = "Aman Nalakath"
+__description__ = "Downloads data from Human Cell Atlas as per the user needs"
+
 #--- code written with .loom files in mind i.e DCP processed matrix with just 1 file in the project.  
 # TODO: Many projects have multiple count matrix files (if intend on using .mtx and its variants). Think of scrapping all this together if user is going to use those instead ## add before pd.DataFrame printing ---#
 # TODO: download meter, nudge to use tmux, faster downloads??
@@ -17,6 +20,7 @@ import logging
 from rich import print
 from rich.console import Console
 from rich.table import Table
+import yaml
 
 console = Console()
 
@@ -38,6 +42,23 @@ class Hit(BaseModel):
     samples: Optional[List[Sample]] = None
     files: List[File]
 
+# This blocks checks if there is a config file in the root directory. This automode 
+yaml_cfg = {}
+if os.path.exists("config.yaml"):
+    import yaml
+    with open("config.yaml") as f:
+        yaml_cfg = yaml.safe_load(f) or {}
+
+hca_cfg = yaml_cfg.get("hca", {})
+auto_mode = bool(hca_cfg)
+
+if auto_mode:
+    filters = hca_cfg.get("filters", {})
+    save_dir = hca_cfg.get("save_dir", "data_raw/HCA_downloads") #n default save location
+    choice = hca_cfg.get("index", 0) # download the first file if not specified
+    catalog = hca_cfg.get("catalog", "dcp54") # default to dcp54 catalog
+    size = hca_cfg.get("size", 100) # limit the size to 100? Change maybe??
+
 #dict
 # filters available on HCA
 supported_fields = [
@@ -56,47 +77,48 @@ supported_fields = [
     "workflow", "accessible"
 ]
 
-# ask user
-path = input("\nPath to a config file for filtering (press Enter for manual input): \n").strip()
+if not auto_mode:
+    # ask user
+    path = input("\nPath to a config file for filtering (press Enter for manual input): \n").strip()
 
-# init dict for filter
-filters = {}
+    # init dict for filter
+    filters = {}
 
-if path and os.path.isfile(path):
-    with open(path) as f:
-        # set json as filter
-        filters = json.load(f)
-    print(f"\nLoaded filters from {path}")
-else:
-    # print available fields
-    #print("\nSupported fields:\n" + ", ".join(supported_fields))
-    console.rule("[bold green]\nSupported Fields")
-    console.print() 
-    console.print(", ".join(supported_fields))
-    console.print() 
+    if path and os.path.isfile(path):
+        with open(path) as f:
+            # set json as filter
+            filters = json.load(f)
+        print(f"\nLoaded filters from {path}")
+    else:
+        # print available fields
+        #print("\nSupported fields:\n" + ", ".join(supported_fields))
+        console.rule("[bold green]\nSupported Fields")
+        console.print() 
+        console.print(", ".join(supported_fields))
+        console.print() 
 
-    # get input for which fields to select
-    chosen = input("\nEnter fields to filter (comma separated, e.g. fileFormat,genusSpecies,isIntermediate, fileSource): ").strip()
-    # sanitize
-    selected = [f.strip() for f in chosen.split(",") if f.strip()]
+        # get input for which fields to select
+        chosen = input("\nEnter fields to filter (comma separated, e.g. fileFormat,genusSpecies,isIntermediate, fileSource): ").strip()
+        # sanitize
+        selected = [f.strip() for f in chosen.split(",") if f.strip()]
 
-    for f in selected:
-        # ensure the provided field is present in HCA api
-        if f not in supported_fields:
-            print(f"Skipping unknown field: {f}")
-            continue
+        for f in selected:
+            # ensure the provided field is present in HCA api
+            if f not in supported_fields:
+                print(f"Skipping unknown field: {f}")
+                continue
 
-        # get input for getting the values for the fields selected in the step b4
-        val = input(f"\nEnter value(s) for '{f}' (comma separated, True/False if applicable): \n").strip()
+            # get input for getting the values for the fields selected in the step b4
+            val = input(f"\nEnter value(s) for '{f}' (comma separated, True/False if applicable): \n").strip()
 
-        if not val:
-            continue
+            if not val:
+                continue
 
-        try: 
-            # ast function used here for passing in the User input directly as a bool. ≠ string. 
-            filters[f] = {"is": [ast.literal_eval(val)]}
-        except Exception: 
-            filters[f] = {"is": [v.strip() for v in val.split(",") if v.strip()]}
+            try: 
+                # ast function used here for passing in the User input directly as a bool. ≠ string. 
+                filters[f] = {"is": [ast.literal_eval(val)]}
+            except Exception: 
+                filters[f] = {"is": [v.strip() for v in val.split(",") if v.strip()]}
 
 # logging.info
 # print("\nUsing filters:")
@@ -216,26 +238,33 @@ async def download_file(url, filename, chunk_size=1024*1024, retries=3):
             time.sleep(2 ** i) # adjust
 
 # choose the save location
-save_dir = input("\nDirectory to save downloads (press Enter for default: data_raw/HCA_downloads): ").strip()
-if not save_dir:
-    save_dir = "data_raw/HCA_downloads"
+if not auto_mode:
+    save_dir = input("\nDirectory to save downloads (press Enter for default: data_raw/HCA_downloads): ").strip()
+    if not save_dir:
+        save_dir = "data_raw/HCA_downloads"
+else:
+    pass
 
 os.makedirs(save_dir, exist_ok=True)
 
-# allow user to specify
-pd.set_option('display.max_rows', None)
-#print(df[["File", "Organ", "Disease"]].reset_index())
-console.rule("[bold magenta]\nAvailable Files")
-console.print() 
-console.print(df[["File", "Organ", "Disease"]].reset_index())
-console.print() 
-#pd.reset_option("display.max_rows")
-choice = int(input("\nWhich file to download? Enter the index: "))
+if not auto_mode:
+    # allow user to specify
+    pd.set_option('display.max_rows', None)
+    #print(df[["File", "Organ", "Disease"]].reset_index())
+    console.rule("[bold magenta]\nAvailable Files")
+    console.print() 
+    console.print(df[["File", "Organ", "Disease"]].reset_index())
+    console.print() 
+    #pd.reset_option("display.max_rows")
+    choice = int(input("\nWhich file to download? Enter the index: "))
+else:
+    pass
 
 url = df.loc[choice, "Url"]
 filename = os.path.join(save_dir, df.loc[choice, 'File'] or f"file_{choice+1}")
 
 df.to_csv(os.path.join(save_dir, "metadata.csv"), index=False)
+
 
 # logging.info
 #print(f"\nDownloading: {filename}")
