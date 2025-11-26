@@ -1,4 +1,0 @@
-input_file: /home/biodata/aman/data_processed/processed/hippocampus-development-human-brain-10XV2_annotated.h5ad
-celltype: ""
-gtf: /home/biodata/aman/data_raw/gencode.v49.annotation.gtf
-model: /home/biodata/aman/Human-GEM/model/Human-GEM.xml
