@@ -1,4 +1,9 @@
+__author__ = "Aman Nalakath"
+
+# Under the assumption that gene names in adata.var are HGNC (alphabetical gene names). If Ensembl or Entrez ##TODO: conversion needed
+
 import celltypist
+from celltypist import models
 from celltypist import annotate
 import scanpy as sc
 import os
@@ -13,10 +18,14 @@ print('check appropriate model at https://www.celltypist.org/models')
 
 print(celltypist.models.models_description()) # cache check?
 
-choice = input("\nChoose which model to proceed with: e.g Immune_All_Low.pkl")
-model_name = choice.replace(".pkl", "")
-# download a base model
-model=celltypist.models.download_models(f'{model_name}')
+choice = input("\nChoose which model to proceed with: e.g Immune_All_Low.pkl: ")
+if not choice.endswith(".pkl"):
+    choice += ".pkl"
+
+models.download_models(model=choice)
+
+# load the model
+model = models.Model.load(model=choice)
 
 # change to normed lay ## layer name assumed from previous script
 if "normed_log" not in adata.layers:

@@ -1,3 +1,5 @@
+__author__ = "Aman Nalakath"
+
 import pandas as pd
 import numpy as np
 import cobra

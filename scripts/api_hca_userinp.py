@@ -3,8 +3,6 @@ __description__ = "Downloads data from Human Cell Atlas as per the user needs"
 
 #--- code written with .loom files in mind i.e DCP processed matrix with just 1 file in the project.  
 # TODO: Many projects have multiple count matrix files (if intend on using .mtx and its variants). Think of scrapping all this together if user is going to use those instead ## add before pd.DataFrame printing ---#
-# TODO: download meter, nudge to use tmux, faster downloads??
-
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import requests
@@ -21,12 +19,41 @@ from rich import print
 from rich.console import Console
 from rich.table import Table
 import yaml
+from rich.progress import (
+    Progress, BarColumn, TimeElapsedColumn,
+    TimeRemainingColumn, DownloadColumn, TransferSpeedColumn
+)
+import sys
+import logging
+from pythonjsonlogger import jsonlogger
+
+# log template ## betterstack.com
+logger = logging.getLogger(__name__)
+
+stdoutHandler = logging.StreamHandler(stream=sys.stdout)
+fileHandler = logging.FileHandler("hca_api_logs.txt")
+
+jsonFmt = jsonlogger.JsonFormatter(
+    "%(name)s %(asctime)s %(levelname)s %(filename)s %(lineno)s %(process)d %(message)s",
+    rename_fields={"levelname": "severity", "asctime": "timestamp"},
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+)
+
+stdoutHandler.setFormatter(jsonFmt)
+fileHandler.setFormatter(jsonFmt)
+
+logger.addHandler(stdoutHandler)
+logger.addHandler(fileHandler)
+
+logger.setLevel(logging.DEBUG)
+
+# log template #
 
 console = Console()
 
 class File(BaseModel):
     name: str
-    format: Optional[str] = None # Maybe not optional??
+    format: Optional[str] = None
     url: Optional[str] = None
 
 class Project(BaseModel):
@@ -59,7 +86,6 @@ if auto_mode:
     catalog = hca_cfg.get("catalog", "dcp54") # default to dcp54 catalog
     size = hca_cfg.get("size", 100) # limit the size to 100? Change maybe??
 
-#dict
 # filters available on HCA
 supported_fields = [
     "accessions", "aggregateLastModifiedDate", "aggregateSubmissionDate", "aggregateUpdateDate",
@@ -90,7 +116,6 @@ if not auto_mode:
             filters = json.load(f)
         print(f"\nLoaded filters from {path}")
     else:
-        # print available fields
         #print("\nSupported fields:\n" + ", ".join(supported_fields))
         console.rule("[bold green]\nSupported Fields")
         console.print() 
@@ -115,12 +140,11 @@ if not auto_mode:
                 continue
 
             try: 
-                # ast function used here for passing in the User input directly as a bool. ≠ string. 
+                # Function from ast lib. used here for passing in the User input directly as a bool. ≠ string. 
                 filters[f] = {"is": [ast.literal_eval(val)]}
             except Exception: 
                 filters[f] = {"is": [v.strip() for v in val.split(",") if v.strip()]}
 
-# logging.info
 # print("\nUsing filters:")
 # print(json.dumps(filters, indent=2))
 console.rule("[bold cyan]\nUsing filters")
@@ -142,9 +166,10 @@ def fetch_all_pages(catalog=catalog, filters=filters, size=50):
         console.print(f"[yellow]Page {page}[/yellow]")
         r = requests.get(url, params=params if url == base_url else None)
         # stat at this point
-        ## logging.error here
         if r.status_code != 200:
-            print("error", r.status_code, r.text[:200])
+            #print("error", r.status_code, r.text[:200])
+            logger.error("HCA API request failed",
+                extra={"status": r.status_code, "url": url})
             break
 
         data = r.json()
@@ -162,7 +187,6 @@ def fetch_all_pages(catalog=catalog, filters=filters, size=50):
 raw_hits, facets = fetch_all_pages()
 #raw_hits = fetch_all_pages()
 hits = [Hit(**h) for h in raw_hits]
-# logging.info
 #print("pydantic validated:", len(hits))
 console.print(f"[green]\nNumber of pages validated:[/green] {len(hits)}")
 
@@ -170,7 +194,6 @@ formats = facets["fileFormat"]["terms"]
 formats_pd = pd.DataFrame(formats)
 
 # accounting for multiple samples in hits
-
 rows = []
 for hit in hits:
     for project in hit.projects or []:
@@ -206,7 +229,6 @@ for hit in hits:
             })
 
 df = pd.DataFrame(rows)
-#print(df)
 
 ## Extract Url
 urls = df["Url"].tolist()
@@ -218,24 +240,54 @@ headers = {"User-Agent": "Mozilla/5.0"}
 
 # download func; In 1 mb chunks
 async def download_file(url, filename, chunk_size=1024*1024, retries=3):
+
     for i in range(retries):
         try:
             connector = aiohttp.TCPConnector(limit=10)
             async with aiohttp.ClientSession(timeout=timeout, headers=headers, connector=connector) as session:
                 async with session.get(url) as response:
+
                     if response.status != 200:
+                        logger.error("HTTP error", extra={"status": response.status, "url": url})
                         raise Exception(f"Failed: {response.status}")
                     
-                    with open(filename, "wb") as f:
-                        async for chunk in response.content.iter_chunked(chunk_size):
-                            f.write(chunk)
-            # logging.info
+                    total = response.content_length
+
+                    from rich.progress import (
+                        Progress, BarColumn, TimeElapsedColumn,
+                        TimeRemainingColumn, DownloadColumn, TransferSpeedColumn
+                    )
+
+                    with Progress(
+                        "[progress.description]{task.description}",
+                        DownloadColumn(),
+                        BarColumn(),
+                        TransferSpeedColumn(),
+                        TimeRemainingColumn(),
+                        TimeElapsedColumn(),
+                    ) as progress:
+
+                        task = progress.add_task(
+                            f"Downloading {os.path.basename(filename)}",
+                            total=total
+                        )
+
+                        with open(filename, "wb") as f:
+                            async for chunk in response.content.iter_chunked(chunk_size):
+                                try:
+                                    f.write(chunk)
+                                    raise RuntimeError("test")
+                                    progress.update(task, advance=len(chunk))
+                                except Exception:
+                                    logger.critical("failed to write chunks while downloading", exc_info=True)
+                                    raise
+
             print("Download complete:", filename)
             return
+
         except Exception as e:
-            # logging.warning
             print(f"Retry {i+1} failed:", e)
-            time.sleep(2 ** i) # adjust
+            time.sleep(2 ** i)
 
 # choose the save location
 if not auto_mode:
@@ -265,19 +317,14 @@ filename = os.path.join(save_dir, df.loc[choice, 'File'] or f"file_{choice+1}")
 
 df.to_csv(os.path.join(save_dir, "metadata.csv"), index=False)
 
-
-# logging.info
 #print(f"\nDownloading: {filename}")
 console.rule("[bold blue]Downloading File")
 console.print(filename)
 
 asyncio.run(download_file(url, filename))
-# logging.info
 #print("\nSuccess.")
-console.print("[green]Download complete[/green]")
+#console.print("[green]Download complete[/green]")
 
-# To play nice with workflow.py
+# To play nice with run.py
 with open("data_raw/_last_downloaded.txt", "w") as f:
     f.write(filename)
-
-#add logging??

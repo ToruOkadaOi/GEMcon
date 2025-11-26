@@ -4,7 +4,7 @@ data_raw/
 data_processed/
 processed/
 organized/
-notebooks/
+#notebooks/
 expression_by_celltype/
 ipynb_checkpoints/
 
@@ -12,7 +12,7 @@ ipynb_checkpoints/
 
 *.loom
 *.h5ad
-
+*.gaf
 external_tools/
 cobratoolbox-master/
 Human-GEM/
