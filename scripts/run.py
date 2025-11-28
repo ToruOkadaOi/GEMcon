@@ -57,8 +57,9 @@ def main():
 
     #2 no matrices i.e to fetch from databases
     else:
-        run(["python", "scripts/api_hca_userinp.py"])
-        # adjust this to whatever your fetch script outputs
+        # run(["python", "scripts/api_hca_userinp.py"])
+        run(["bash", "scripts/run_in_scanpy.sh", "scripts/api_hca_userinp.py"])
+        # adjust this to the fetch script outputs
         with open("data_raw/_last_downloaded.txt") as f: # using _last_downloaded.txt as identifier
             input_file = f.read().strip()
         #print(f"\n Using fetched file: {input_file}")

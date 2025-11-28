@@ -83,7 +83,7 @@ if auto_mode:
     filters = hca_cfg.get("filters", {})
     save_dir = hca_cfg.get("save_dir", "data_raw/HCA_downloads") #n default save location
     choice = hca_cfg.get("index", 0) # download the first file if not specified
-    catalog = hca_cfg.get("catalog", "dcp54") # default to dcp54 catalog
+    catalog = hca_cfg.get("catalog", "dcp55") # default to dcp54 catalog # update they just changed to dcp55 (wasted time)
     size = hca_cfg.get("size", 100) # limit the size to 100? Change maybe??
 
 # filters available on HCA
@@ -153,7 +153,7 @@ console.print(filters)
 console.print() 
 
 size=100
-catalog = "dcp54"
+catalog = "dcp55"
 
 base_url = "https://service.azul.data.humancellatlas.org/index/files"
 
@@ -276,11 +276,13 @@ async def download_file(url, filename, chunk_size=1024*1024, retries=3):
                             async for chunk in response.content.iter_chunked(chunk_size):
                                 try:
                                     f.write(chunk)
-                                    raise RuntimeError("test")
+                                    #raise RuntimeError("test")
                                     progress.update(task, advance=len(chunk))
                                 except Exception:
                                     logger.critical("failed to write chunks while downloading", exc_info=True)
                                     raise
+
+## When the download fails (after retries the branch/pipeline) still continues. #TODO: think if this needs fixn
 
             print("Download complete:", filename)
             return

@@ -17,7 +17,7 @@ GEMcon integrates data from:
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/aman/GEMcon
+git clone https://github.com/ToruOkadaOi/GEMcon.git
 cd GEMcon
 ```
 
@@ -44,6 +44,20 @@ python scripts/run.py --branch <celltype_annotated|metabolic> [--input <file>]
 ---
 ## Status
 
-Early stage
+In the works
 
 ### TODOs
+
+## Docker
+
+```bash
+docker pull toluene123/gemcon:latest
+
+docker run -it gemcon:latest bash # add --rm if you want post-exit deletion
+
+# make sure python, pyyaml and rich are installed
+micromamba install python=3.10 pyyaml rich -y
+
+# run!
+python3 scripts/run.py -h
+```
