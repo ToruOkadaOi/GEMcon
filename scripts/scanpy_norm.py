@@ -2,10 +2,24 @@ __author__ = "Aman Nalakath"
 
 import scanpy as sc
 import numpy as np
+import os
+import argparse
 
-choice = input("\nProvide the complete path to the loom file: ")
+p = argparse.ArgumentParser()
+p.add_argument("--input")
+args = p.parse_args()
 
-adata = sc.read_loom(f"{choice}")
+# This is to make sure it receives the original input at the beginning from the user. option for interactive input in case using this as a single script
+if args.input:
+    choice = args.input.strip()
+else:
+    choice = input("\nProvide the complete path to the loom/h5ad file: ")
+
+# determine .loom or .h5ad
+if os.path.splitext(os.path.basename(choice))[-1] == '.loom':
+    adata = sc.read_loom(f"{choice}")
+else:
+    adata = sc.read_h5ad(f"{choice}")
 
 # find the name of layers
 print('The name/s of the layers in the file downloaded are: ',adata.layers.keys())
@@ -55,18 +69,20 @@ else:
 # set .X back to raw_counts
 adata.X = adata.layers["raw_counts"]
 
-#check; #print(adata.X)
-
 # change to .h5ad format for faster loading
-output_path = choice.replace('.loom', '.h5ad')
+outdir = "data_processed/processed"
+os.makedirs(outdir, exist_ok=True)
+
+# predictable name for downstream
+base = os.path.splitext(os.path.basename(choice))[0]
+output_path = os.path.join(outdir, f"{base}_normalized.h5ad")
+
 adata.write_h5ad(output_path)
 
+print(f"Saved normalized file to: {output_path}")
 print(adata.layers.keys())
 
-#cells
-## i([adata.obs])
-#genes
-## i([adata.var])
+#cells = ## i([adata.obs]) #genes = ## i([adata.var])
 
 # Confirm everything
 print('Check before proceeding')

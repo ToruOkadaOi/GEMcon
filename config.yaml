@@ -1,4 +1,35 @@
-#input_file: /home/biodata/aman/data_processed/processed/hippocampus-development-human-brain-10XV2_annotated.h5ad
-celltype: ""
+# .loom or .h5ad
+input_file: /home/biodata/aman/data_processed/processed/hippocampus-development-human-brain-10XV2_annotated_normalized_annotated.h5ad
+
+#celltype: leave empty to pool all cells or specify column name
+celltype: "" 
+
+# gene annotation file. obtained from Gencode usually
 gtf: /home/biodata/aman/data_raw/gencode.v49.annotation.gtf
+
+# currently tested with Human-GEM only
 model: /home/biodata/aman/Human-GEM/model/Human-GEM.xml
+
+# config for the above selected model
+model_config:
+  objective_reaction: "MAR02388" # this points to biomass
+  alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
+
+# gimme config
+gimme:
+  obj_frac: 0.1
+  flux_threshold: 0.25
+  solver: "CPLEX"
+
+# tinit config
+tinit:
+  solver: "CPLEX"
+  essential_reactions:
+    - "MAR13082" 
+  nomenclature: "ensembl_gene_id" 
+  
+# for ref. others are ## NOMENCLATURES: [“hgnc_id”,”symbol”,”name”,”entrez_id”,”ensembl_gene_id”,”vega_id”,”ucsc_id”,”ccds_id”, “uniprot_ids”,“pubmed_id”,”omim_id”,”locus_group”,”locus_type”,”alias_symbol”,”alias_name”, “prev_symbol”,”prev_name”, “ena”,”refseq_accession”,”rna_central_ids”] # troppo docs
+
+# save dir for extracted model
+output:
+  models_dir: ./models

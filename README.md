@@ -1,15 +1,15 @@
 # GEMcon
 
-Pipeline for fetching expression~~/proteomic abundance~~ data and building **context-specific human metabolic models** (Human-GEM  based)
+Pipeline for fetching expression ~~/proteomic abundance~~ data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
 
 ---
 
 ## Overview
 
 GEMcon integrates data from:
-- scRNA-seq (Human Cell Atlas)
-- bulk RNA-seq (GTEx) -->proposed
-- proteomics (PaxDB) -->proposed
+- scRNA-seq ([Human Cell Atlas](https://www.humancellatlas.org))
+- bulk RNA-seq ([GTEx](https://gtexportal.org/home/)) -->proposed
+- proteomics ([PaxDB](https://pax-db.org)) -->proposed
 
 ---
 
@@ -24,15 +24,15 @@ cd GEMcon
 ### 2. Create necessary environments
 
 ```bash
-conda env create -f envs/scanpy_legacy.yml
-conda env create -f envs/cplex.yml
-conda env create -f envs/gecko.yml
+conda env create -f envs/scanpy_env.yml
+conda env create -f envs/cplex_env.yml
+conda env create -f envs/gecko_env.yml
 ```
 
 ### 3. Usage
 ```bash
 # Inside GEMcon directory
-python scripts/run.py --branch <celltype_annotated|metabolic> [--input <file>]
+python run.py --branch <annotate_cells|metabolic> [--input <file>]
 ```
 - `--branch` is required
 - `--input` is optional

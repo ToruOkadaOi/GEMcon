@@ -1,4 +1,4 @@
-# micromamba base image. #TODO: Could I use the latest tag here? ## Should I use mamba instead??
+# micromamba base image. #TODO: Should I use mamba instead??
 FROM mambaorg/micromamba:2.4.0
 
 # setting to root for installing add. pip packages

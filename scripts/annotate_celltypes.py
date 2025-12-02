@@ -7,8 +7,26 @@ from celltypist import models
 from celltypist import annotate
 import scanpy as sc
 import os
+import argparse
 
-choice = input("\nProvide the complete path to the log1p normalized h5ad file: ")
+p = argparse.ArgumentParser()
+p.add_argument("--input")
+args = p.parse_args()
+
+if args.input:
+    choice = args.input.strip()
+else:
+    # auto-detect last normalized file
+    folder = "data_processed/processed"
+    files = [f for f in os.listdir(folder) if f.endswith("_normalized.h5ad")]
+
+    if not files:
+        choice = input("No normalized file found. Provide path manually: ").strip()
+    else:
+        choice = max(files, key=lambda f: os.path.getmtime(os.path.join(folder, f)))
+        choice = os.path.join(folder, choice)
+        print(f"Using auto-detected file: {choice}")
+
 basename = os.path.basename(choice)
 f_prefix = basename.split('.')[0]
 
@@ -50,3 +68,4 @@ output_path = os.path.join(outdir, f"{f_prefix}_annotated.h5ad")
 adata.write(output_path)
 
 print("Saved annotated file to:", output_path)
+print(output_path)
