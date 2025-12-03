@@ -31,7 +31,7 @@ from pythonjsonlogger import jsonlogger
 logger = logging.getLogger(__name__)
 
 stdoutHandler = logging.StreamHandler(stream=sys.stdout)
-fileHandler = logging.FileHandler("hca_api_logs.txt")
+fileHandler = logging.FileHandler("data/data_raw/hca_api_logs.txt")
 
 jsonFmt = jsonlogger.JsonFormatter(
     "%(name)s %(asctime)s %(levelname)s %(filename)s %(lineno)s %(process)d %(message)s",
