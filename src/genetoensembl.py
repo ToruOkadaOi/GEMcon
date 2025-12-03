@@ -19,12 +19,12 @@ if not os.path.exists(gtf_path):
 if args.expr:
     expr_path = args.expr.strip()
 else:
-    files = [f for f in os.listdir("data_processed") if f.startswith("expression_data_") and f.endswith(".csv")]
+    files = [f for f in os.listdir("data/data_processed") if f.startswith("expression_data_") and f.endswith(".csv")]
 
     if not files:
         expr_path = input("No files found, please provide the abs. path to an expression .csv: ").strip()
     else:
-        paths = [os.path.join("data_processed", f) for f in files]
+        paths = [os.path.join("data/data_processed", f) for f in files]
         expr_path = max(paths, key=os.path.getmtime)   # the maximum time will be for the last created file ## TODO: verify twice
         print(f"Using the last made file: {expr_path}")
 
@@ -55,6 +55,6 @@ df["gencode_id"] = df.index.map(mapping)
 mapped = df.dropna(subset=["gencode_id"]).set_index("gencode_id")[["expression"]]
 
 # save
-out_path = f"data_processed/{base}_gencode.csv"
+out_path = f"data/data_processed/{base}_gencode.csv"
 mapped.to_csv(out_path)
 print(f"Saved: {out_path}")

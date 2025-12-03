@@ -293,9 +293,9 @@ async def download_file(url, filename, chunk_size=1024*1024, retries=3):
 
 # choose the save location
 if not auto_mode:
-    save_dir = input("\nDirectory to save downloads (press Enter for default: data_raw/HCA_downloads): ").strip()
+    save_dir = input("\nDirectory to save downloads (press Enter for default: data/data_raw/HCA_downloads): ").strip()
     if not save_dir:
-        save_dir = "data_raw/HCA_downloads"
+        save_dir = "data/data_raw/HCA_downloads"
 else:
     pass
 
@@ -324,9 +324,7 @@ console.rule("[bold blue]Downloading File")
 console.print(filename)
 
 asyncio.run(download_file(url, filename))
-#print("\nSuccess.")
-#console.print("[green]Download complete[/green]")
 
 # To play nice with run.py
-with open("data_raw/_last_downloaded.txt", "w") as f:
+with open("data/data_raw/_last_downloaded.txt", "w") as f:
     f.write(filename)

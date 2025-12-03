@@ -20,7 +20,6 @@ console = Console()
 if args.input:
     choice = args.input.strip()
 else:
-    #choice = input("\nProvide the complete path to the .h5ad or .loom: ") # log1p norm'ed
     choice = Prompt.ask("[bold green]\nProvide the complete path to the .h5ad or .loom: ")
 
 # determine .loom or .h5ad
@@ -53,7 +52,6 @@ adata.X = adata.layers["raw_counts"].copy()
 print(adata.obs) # see if there is cell types
 
 # see all the cell types  # to pool by cell type then
-#print("obs columns:", adata.obs.columns.tolist())
 table = Table(title="obs columns", title_style="bold cyan") # How to get the table to the center of tty?
 
 for col in adata.obs.columns:
@@ -65,7 +63,6 @@ console.print(table)
 if args.celltype is not None:
     col = args.celltype.strip()
 else:
-    #col = input("\nEnter the column name for pooling-by-celltype (press Enter to pool all): ").strip()
     col = Prompt.ask("\n[bold green]Enter the column name for pooling-by-celltype -- usually 'cell_type' (press Enter to pool all): ").strip()
 # gene names usually stored in .var
 genes = adata.var_names
@@ -76,14 +73,14 @@ if not col:
     x = adata.layers["raw_counts"].toarray().sum(axis=0).flatten()
     cpm = x / x.sum() * 1e6
 
-    os.makedirs("data_processed", exist_ok=True)
-    output_path = f"data_processed/expression_data_{base}.csv"
+    os.makedirs("data/data_processed", exist_ok=True)
+    output_path = f"data/data_processed/expression_data_{base}.csv"
 
     pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(output_path, index=False)
     print(f"Saved: {output_path}")
 
 else:
-    outdir = f"data_processed/expression_by_celltype_{base}"
+    outdir = f"data/data_processed/expression_by_celltype_{base}"
     os.makedirs(outdir, exist_ok=True)
     for t in adata.obs[col].unique():
         # subset for this cell type
@@ -101,6 +98,5 @@ else:
         
         # save files
         pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(output_path, index=False)
-        #print(f"Saved: {output_path}")
         console.rule("[bold green]File Saved[/bold green]")
         console.print(f"[bold cyan]{output_path}[/bold cyan]")

@@ -75,7 +75,7 @@ def main():
             cmd += ["--celltype", celltype]
         run(cmd)
 
-        # 2. genetoensembl.py = To change the HGNC symbol to Ensembl ids (compatible with HumanGEM). #TODO : EntrezId for Recon3D
+        # 2. genetoensembl.py = To change the HGNC symbol to Ensembl ids (compatible with HumanGEM). #TODO : EntrezId for Recon3D?
         cmd = ["bash", "src/run_in_scanpy.sh", "src/genetoensembl.py"] # I need to run this before context algorithms
         if gtf: cmd += ["--gtf", gtf]
         run(cmd) 

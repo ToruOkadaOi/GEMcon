@@ -70,7 +70,7 @@ else:
 adata.X = adata.layers["raw_counts"]
 
 # change to .h5ad format for faster loading
-outdir = "data_processed/processed"
+outdir = "data/data_processed/processed"
 os.makedirs(outdir, exist_ok=True)
 
 # predictable name for downstream

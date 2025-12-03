@@ -42,13 +42,13 @@ if not os.path.exists(model_path):
 if args.expr:
     expr_path = args.expr.strip()
 else:
-    files = [f for f in os.listdir("data_processed") 
+    files = [f for f in os.listdir("data/data_processed") 
              if f.startswith("expression_data_") and f.endswith("_gencode.csv")]
     
     if not files:
         expr_path = input("\nNo files found, please provide the abs. path to an expression .csv: ").strip()
     else:
-        paths = [os.path.join("data_processed", f) for f in files]
+        paths = [os.path.join("data/data_processed", f) for f in files]
         expr_path = max(paths, key=os.path.getmtime)
         print(f"Using the last made file: {expr_path}")
 
@@ -129,5 +129,6 @@ print('model exported')
 solution = ctx_model.optimize()
 print('The objective value is: ', solution.objective_value)
 
+# TODO: output the selcted reaction indices as csv (like in gimme)
 #get the model summary
 print(f"Summary of extracted model: {ctx_model.summary()}")

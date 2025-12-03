@@ -17,7 +17,7 @@ if args.input:
     choice = args.input.strip()
 else:
     # auto-detect last normalized file
-    folder = "data_processed/processed"
+    folder = "data/data_processed/processed"
     files = [f for f in os.listdir(folder) if f.endswith("_normalized.h5ad")]
 
     if not files:
@@ -61,7 +61,7 @@ collapsed = predictions.predicted_labels.groupby(level=0)['majority_voting'].fir
 adata.obs['cell_type'] = adata.obs_names.map(collapsed)
 
 # save
-outdir = "data_processed/processed"
+outdir = "data/data_processed/processed"
 os.makedirs(outdir, exist_ok=True)
 
 output_path = os.path.join(outdir, f"{f_prefix}_annotated.h5ad")

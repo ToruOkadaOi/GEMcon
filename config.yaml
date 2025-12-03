@@ -1,11 +1,11 @@
 # .loom or .h5ad
-input_file: /home/biodata/aman/data_processed/processed/hippocampus-development-human-brain-10XV2_annotated_normalized_annotated.h5ad
+input_file: /home/biodata/aman/data/data_processed/processed/hippocampus-development-human-brain-10XV2_annotated_normalized_annotated.h5ad
 
 #celltype: leave empty to pool all cells or specify column name
 celltype: "" 
 
 # gene annotation file. obtained from Gencode usually
-gtf: /home/biodata/aman/data_raw/gencode.v49.annotation.gtf
+gtf: /home/biodata/aman/data/data_raw/gencode.v49.annotation.gtf
 
 # currently tested with Human-GEM only
 model: /home/biodata/aman/Human-GEM/model/Human-GEM.xml
