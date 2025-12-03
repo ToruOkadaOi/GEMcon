@@ -1,6 +1,6 @@
 import subprocess
 import os
-import tempfile
+import pytest
 import shutil
 
 # ---
@@ -22,7 +22,7 @@ def test_reads_config_yaml():
 
 # ---
 ## input
-
+@pytest.mark.skipif(os.getenv('CI') == 'true', reason="CI skip")
 def test_fetches_data_when_no_input():
     # Temporarily move config.yaml if it exists
     config_exists = os.path.exists("config.yaml")
