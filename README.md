@@ -1,5 +1,7 @@
 # GEMcon
 
+[![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml)
+
 Pipeline for fetching expression ~~/proteomic abundance~~ data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
 
 ---
