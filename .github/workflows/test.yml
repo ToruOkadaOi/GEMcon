@@ -20,7 +20,7 @@ jobs:
           python-version: '3.10'
       
       - name: Install dependencies
-        run: pip install pytest pyyaml rich
+        run: pip install pytest pyyaml rich requests
       
       - name: Run tests
         run: pytest tests/test.py -v
