@@ -34,7 +34,7 @@ conda env create -f envs/gecko_env.yml
 ### 3. Usage
 ```bash
 # Inside GEMcon directory
-python run.py --branch <annotate_cells|metabolic> [--input <file>]
+python run.py --branch <annotate|metabolic> [--input <file>]
 ```
 - `--branch` is required
 - `--input` is optional

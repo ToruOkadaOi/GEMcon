@@ -19,7 +19,7 @@ def run(cmd):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--branch", choices=["annotate_cells", "metabolic"], required=True) # simpler names in CLI? -a -b indicative of seq. to follow?
+    p.add_argument("--branch", choices=["annotate", "metabolic"], required=True) # simpler names in CLI? -a -b indicative of seq. to follow?
     p.add_argument("--input", help="loom/h5ad file. If not given, it will be fetched.")
     args = p.parse_args()
 
@@ -60,7 +60,7 @@ def main():
         console.rule(f"[bold cyan]Using fetched file: {input_file}")
 
     # branch A
-    if args.branch == "annotate_cells":
+    if args.branch == "annotate":
         # normalize per cell, apply log transform to pass onto celltypist. Clustering could be added, but CellTypist can do clustering on its own
         run(["bash", "src/run_in_scanpy.sh", "src/scanpy_norm.py", "--input", input_file])
         run(["bash", "src/run_in_scanpy.sh", "src/annotate_celltypes.py"])

@@ -1,4 +1,4 @@
-name: test_ga
+name: tests
 
 on:
   push:
