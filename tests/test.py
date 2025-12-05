@@ -2,6 +2,9 @@ import subprocess
 import os
 import pytest
 import shutil
+import requests
+import json
+import time
 
 # ---
 ## --help
@@ -43,3 +46,34 @@ def test_fetches_data_when_no_input():
         # Restore config
         if config_exists:
             shutil.move("config.yaml.backup", "config.yaml") 
+
+# ---
+## HCA api ### test reachability
+base_url = "https://service.azul.data.humancellatlas.org/index/files"
+def test_api_reachable():
+    filters = {"fileFormat": {"is": ["loom"]}}
+    params = {"catalog": "dcp55", "filters": json.dumps(filters), "size": 1}
+    r = requests.get(base_url, params=params)
+    assert r.status_code == 200
+
+## uniprot api ### geckopy #### test reachability
+
+base_post= "https://rest.uniprot.org/idmapping/run"
+base_get = "https://rest.uniprot.org/idmapping/results/"
+def test_uniprot():
+    data = {
+        "from": "Ensembl_Protein",
+        "to": "UniProtKB",
+        "ids": "ENSP00000370010"
+    }
+    r = requests.post(base_post, data=data)
+    assert r.status_code == 200
+    assert "jobId" in r.json()
+    job_id = r.json()["jobId"]
+
+    #---
+    time.sleep(3)
+    
+    result = requests.get(f"{base_get}{job_id}").json()
+    assert "results" in result
+    assert len(result["results"]) > 0
