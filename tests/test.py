@@ -5,6 +5,11 @@ import shutil
 import requests
 import json
 import time
+import aiohttp
+import asyncio
+from aiohttp import ClientTimeout
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 # ---
 ## --help
@@ -17,7 +22,7 @@ def test_help_runs():
 ### reads config f
 def test_reads_config_yaml():
     result = subprocess.run(
-        ["python", "run.py", "--branch", "annotate_cells"],
+        ["python", "run.py", "--branch", "annotate"],
         capture_output=True,
         timeout=5
     )
@@ -33,7 +38,7 @@ def test_fetches_data_when_no_input():
         shutil.move("config.yaml", "config.yaml.backup")
     try:
         result = subprocess.run(
-            ["python", "scripts/run.py", "--branch", "annotate_cells"],
+            ["python", "scripts/run.py", "--branch", "annotate"],
             capture_output=True,
             text=True,
             timeout=5
@@ -77,3 +82,31 @@ def test_uniprot():
     result = requests.get(f"{base_get}{job_id}").json()
     assert "results" in result
     assert len(result["results"]) > 0
+
+# ---
+## PaxDB ### test reachability # write better test
+timeout = ClientTimeout(total=None)
+headers = {"User-Agent": "Mozilla/5.0"}
+def get_links():
+    base = "https://pax-db.org"
+    listing_url = f"{base}/downloads/3.0/datasets/9606/"
+
+    r = requests.get(listing_url)
+    r.raise_for_status()
+
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    links = []
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if href.endswith(".txt"):
+            links.append(urljoin(listing_url, href))
+
+    return links
+
+def test_links():
+    links = get_links()
+    assert len(links) > 0, "No links found"
+    
+    r = requests.head(links[0], headers=headers, timeout=10)
+    assert r.status_code == 200
