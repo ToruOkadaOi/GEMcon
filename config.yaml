@@ -33,3 +33,12 @@ tinit:
 # save dir for extracted model
 output:
   models_dir: ./models
+
+geckopy:
+  ec_model: "/home/biodata/aman/data/ecHumanGEM_expanded.xml"
+  paxdb_data: "/home/biodata/aman/data/data_raw/paxdb_human_data/9606-WHOLE_ORGANISM-integrated.txt"
+  cell_params:
+    vol: 2.3e-12
+    dens: 1.05
+    water: 0.7
+  solver: "CPLEX"

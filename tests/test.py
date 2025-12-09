@@ -110,3 +110,9 @@ def test_links():
     
     r = requests.head(links[0], headers=headers, timeout=10)
     assert r.status_code == 200
+
+# Test that the reactions are getting a score according to the exp.csv
+# Test extracted model # CI ignore or dummy
+# Test loom and h5ad produce the same result
+# Any data losses in the branches
+# Algo specific tests

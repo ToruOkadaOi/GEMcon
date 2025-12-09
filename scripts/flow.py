@@ -15,7 +15,7 @@ algorithms = {
     "fastcore":    ("fastcore_beta.py", "cplex"),
     "geckopy":     ("geckopy.py", "gecko"),
     "imat":        ("imat_beta.py", "cplex"),
-    "cadre":       ("pymCADRE.py", "cplex"),
+#    "cadre":       ("pymCADRE.py", "cplex"),
 }
 
 @task
@@ -85,15 +85,17 @@ def branch_metabolic(input_file, cfg, algo: str = "gimme"):
     args = ["--model", model] if model else []
     run_algo(script, env, args=args)
 
+# TODO: @task proteomic branch with proper processing.
+
 @flow
-def main_flow(branch: str, input_file: Optional[str] = None):
+def main_flow(branch: str, input_file: Optional[str] = None, algo: str = "gimme"):
     cfg = load_config()
     resolved_input = resolve_input_file(input_file, cfg)
 
     if branch == "annotate":
         branch_annotate(resolved_input)
     elif branch == "metabolic":
-        branch_metabolic(resolved_input, cfg, algo=args.algo)
+        branch_metabolic(resolved_input, cfg, algo=algo)
 
 if __name__ == "__main__":
     # inside the if block, as this file would be imported later d.line
@@ -103,4 +105,4 @@ if __name__ == "__main__":
     p.add_argument("--input")
     p.add_argument("--algo", default="gimme", help="choose algorithm (default is gimme)")
     args = p.parse_args()
-    main_flow(args.branch, args.input)
+    main_flow(args.branch, args.input, args.algo)
