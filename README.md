@@ -2,7 +2,7 @@
 
 [![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml)
 
-Pipeline for fetching expression ~~/proteomic abundance~~ data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
+Pipeline for fetching expression /proteomic abundance data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
 
 ---
 
@@ -11,7 +11,7 @@ Pipeline for fetching expression ~~/proteomic abundance~~ data and building **co
 GEMcon integrates data from:
 - scRNA-seq ([Human Cell Atlas](https://www.humancellatlas.org))
 - bulk RNA-seq ([GTEx](https://gtexportal.org/home/)) -->proposed
-- proteomics ([PaxDB](https://pax-db.org)) -->proposed
+- proteomics ([PaxDB](https://pax-db.org))
 
 ---
 
@@ -34,9 +34,10 @@ conda env create -f envs/gecko_env.yml
 ### 3. Usage
 ```bash
 # Inside GEMcon directory
-python run.py --branch <annotate|metabolic> [--input <file>]
+python run.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
 ```
 - `--branch` is required
+- `--algo` is optional
 - `--input` is optional
 
 ### 4. Results
