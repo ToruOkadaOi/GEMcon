@@ -37,7 +37,11 @@ conda env create -f envs/gecko_env.yml
 python run.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
 ```
 - `--branch` is required
-- `--algo` is optional
+- `--algo` is optional. Choices:
+  - gimme 
+  - tinit 
+  - fastcore  (*testing*) 
+  - imat      (*testing*) 
 - `--input` is optional
 
 ### 4. Results
