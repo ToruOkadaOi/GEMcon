@@ -1,3 +1,4 @@
+# same as run.py but with prefect orchestrator
 from prefect import flow, task
 import subprocess
 import os
@@ -56,8 +57,6 @@ def resolve_input_file(args_input, cfg):
     run_cmd(["bash", "src/run_in_scanpy.sh", "src/api_hca_userinp.py"])
     with open("data_raw/_last_downloaded.txt") as f:
         return f.read().strip()
-
-# TODO: @task proteomic branch with proper processing.
 
 @task
 def branch_transcriptomic(input_file, cfg, task_type: str, algo: str = "gimme"):
