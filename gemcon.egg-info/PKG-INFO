@@ -1,0 +1,85 @@
+Metadata-Version: 2.4
+Name: gemcon
+Version: 0.1.0
+Summary: Transcriptomic and proteomic based metabolic model contextualized
+Author-email: Aman Nalakath <aman.nalakath@tum.de>
+License: MIT
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: typer>=0.17.0
+Requires-Dist: prefect>=3.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: pyyaml>=6.0.0
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+
+# GEMcon
+
+[![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml)
+
+Pipeline for fetching expression /proteomic abundance data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
+
+---
+
+## Overview
+
+GEMcon integrates data from:
+- scRNA-seq ([Human Cell Atlas](https://www.humancellatlas.org))
+- bulk RNA-seq ([GTEx](https://gtexportal.org/home/)) -->proposed
+- proteomics ([PaxDB](https://pax-db.org))
+
+---
+
+## Quick Start
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/ToruOkadaOi/GEMcon.git
+cd GEMcon
+```
+
+### 2. Create necessary environments
+
+```bash
+conda env create -f envs/scanpy_env.yml
+conda env create -f envs/cplex_env.yml
+conda env create -f envs/gecko_env.yml
+```
+
+### 3. Usage
+```bash
+# Inside GEMcon directory
+python scripts/cli.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
+```
+- `--branch` is required
+- `--algo` is optional. Choices:
+  - gimme 
+  - tinit 
+  - fastcore  (*testing*) 
+  - imat      (*testing*) 
+- `--input` is optional
+
+### 4. Results
+
+`results/` && `data_processed/`
+
+---
+## Status
+
+In the works
+
+### TODOs
+
+## Docker
+
+```bash
+docker pull toluene123/gemcon:latest
+
+docker run -it gemcon:latest bash # add --rm if you want post-exit deletion
+
+# make sure python, pyyaml and rich are installed
+micromamba install python=3.10 pyyaml rich -y
+
+# run!
+python3 scripts/run.py -h
+```

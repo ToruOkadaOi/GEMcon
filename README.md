@@ -55,6 +55,8 @@ In the works
 
 ### TODOs
 
+Updating Dockerfile
+
 ## Docker
 
 ```bash

@@ -1,13 +1,13 @@
 import typer
 from typing import Optional
-from flow import main_flow
+from .flow import main_flow
 
 app = typer.Typer()
 
 
 @app.command()
 def main(
-    branch: str = typer.Option(..., "--branch", help="Transcriptomic or Proteomic Branch"), # typer.Argument() insteade?
+    branch: str = typer.Option(..., "--branch", help="[transcriptomic] or [proteomic] Branch"), # typer.Argument() insteade?
     input: Optional[str] = typer.Option(None, "--input", help="Input file eg - .loom/.h5ad"),
     task: Optional[str] = typer.Option(None, "--task", help="Task type eg - annotate/metabolic"),
     algo: Optional[str] = typer.Option(
