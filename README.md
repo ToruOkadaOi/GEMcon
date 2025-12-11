@@ -34,7 +34,7 @@ conda env create -f envs/gecko_env.yml
 ### 3. Usage
 ```bash
 # Inside GEMcon directory
-python flow.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
+python scripts/cli.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
 ```
 - `--branch` is required
 - `--algo` is optional. Choices:
