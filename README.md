@@ -34,7 +34,7 @@ conda env create -f envs/gecko_env.yml
 ### 3. Usage
 ```bash
 # Inside GEMcon directory
-python scripts/cli.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
+python scripts/cli.py --branch <transcriptomic|proteomic> [--task <annotate|metabolic>] [--algo <algorithm>] [--input <file>]
 ```
 - `--branch` is required
 - `--algo` is optional. Choices:
@@ -43,6 +43,15 @@ python scripts/cli.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [
   - fastcore  (*testing*) 
   - imat      (*testing*) 
 - `--input` is optional
+
+### Optional
+
+```bash
+# Use as CLI instead
+pip install -e . # install
+
+gemcon --branch <transcriptomic|proteomic> [--task <annotate|metabolic>] [--algo <algorithm>] [--input <file>] # run!
+```
 
 ### 4. Results
 
@@ -55,7 +64,9 @@ In the works
 
 ### TODOs
 
-Updating Dockerfile
+GTex integration  
+env. reproducibility  
+updating Dockerfile
 
 ## Docker
 
