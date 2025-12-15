@@ -151,4 +151,4 @@ dependencies:
       - traitlets==5.14.3
       - troppo==0.0.7
       - wcwidth==0.2.14
-#prefix: /home/biodata/miniconda3/envs/cplex_aman_new
+prefix: /home/biodata/miniconda3/envs/cplex_aman_new

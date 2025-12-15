@@ -68,6 +68,7 @@ dependencies:
   - tk=8.6.13=noxft_ha0e22de_103
   - tornado=6.4.1=py38hfb59056_0
   - traitlets=5.14.3=pyhd8ed1ab_0
+  - tree=2.2.1=hb9d3cd8_0
   - typing_extensions=4.12.2=pyha770c72_0
   - wcwidth=0.2.13=pyhd8ed1ab_0
   - wheel=0.45.1=pyhd8ed1ab_0
@@ -105,6 +106,7 @@ dependencies:
       - pygments==2.19.2
       - python-dateutil==2.9.0.post0
       - pytz==2025.2
+      - pyyaml==6.0.3
       - requests==2.32.4
       - rich==14.2.0
       - ruamel-yaml==0.18.16
@@ -117,4 +119,4 @@ dependencies:
       - typing-extensions==4.13.2
       - urllib3==2.2.3
       - zipp==3.20.2
-#prefix: /home/biodata/miniconda3/envs/gecko_aman
+prefix: /home/biodata/miniconda3/envs/gecko_aman
