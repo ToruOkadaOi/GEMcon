@@ -55,7 +55,7 @@ def resolve_input_file(args_input, cfg):
 
     # fetch
     run_cmd(["bash", "src/run_in_scanpy.sh", "src/api_hca_userinp.py"])
-    with open("data_raw/_last_downloaded.txt") as f:
+    with open("data/data_raw/_last_downloaded.txt") as f:
         return f.read().strip()
 
 @task

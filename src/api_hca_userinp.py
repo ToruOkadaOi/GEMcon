@@ -25,13 +25,17 @@ from rich.progress import (
 )
 import sys
 import logging
+from pathlib import Path
 from pythonjsonlogger import jsonlogger
 
 # log template ## betterstack.com
 logger = logging.getLogger(__name__)
+# addition ## ensure log dir exists # TODO: Switch to a single logging file instead
+log_path = Path("data/data_raw/hca_api_logs.txt")
+log_path.parent.mkdir(parents=True, exist_ok=True)
 
 stdoutHandler = logging.StreamHandler(stream=sys.stdout)
-fileHandler = logging.FileHandler("data/data_raw/hca_api_logs.txt")
+fileHandler = logging.FileHandler(log_path)
 
 jsonFmt = jsonlogger.JsonFormatter(
     "%(name)s %(asctime)s %(levelname)s %(filename)s %(lineno)s %(process)d %(message)s",
@@ -55,6 +59,8 @@ class File(BaseModel):
     name: str
     format: Optional[str] = None
     url: Optional[str] = None
+    azul_url: Optional[str] = None
+    drs_uri: Optional[str] = None
 
 class Project(BaseModel):
     projectTitle: Optional[List[Optional[str]]] = None
@@ -81,7 +87,7 @@ auto_mode = bool(hca_cfg)
 
 if auto_mode:
     filters = hca_cfg.get("filters", {})
-    save_dir = hca_cfg.get("save_dir", "data_raw/HCA_downloads") #n default save location
+    save_dir = hca_cfg.get("save_dir", "data/data_raw/HCA_downloads") #n default save location
     choice = hca_cfg.get("index", 0) # download the first file if not specified
     catalog = hca_cfg.get("catalog", "dcp55") # default to dcp54 catalog # update they just changed to dcp55 (wasted time)
     size = hca_cfg.get("size", 100) # limit the size to 100? Change maybe??
@@ -225,7 +231,7 @@ for hit in hits:
                 "Organ": organ,
                 "Disease": disease,
                 "File": file.name,
-                "Url": file.url
+                "Url": file.azul_url or file.url
             })
 
 df = pd.DataFrame(rows)
@@ -315,7 +321,8 @@ else:
     pass
 
 url = df.loc[choice, "Url"]
-filename = os.path.join(save_dir, df.loc[choice, 'File'] or f"file_{choice+1}")
+filename = str(os.path.join(save_dir, df.loc[choice, 'File'] or f"file_{choice+1}"))
+#filename = str(filename)
 
 df.to_csv(os.path.join(save_dir, "metadata.csv"), index=False)
 
