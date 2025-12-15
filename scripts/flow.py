@@ -111,18 +111,18 @@ def main_flow(branch: str, input_file: Optional[str] = None, task: Optional[str]
 
         branch_proteomic(cfg, algo)
 
-# if __name__ == "__main__":
-#     # inside the if block, as this file would be imported later d.line
-#     import argparse
-#     p = argparse.ArgumentParser()
-#     p.add_argument("--branch", choices=["transcriptomic", "proteomic"], required=True)
-#     p.add_argument("--task", choices=["annotate", "metabolic"])
-#     p.add_argument("--input")
-#     p.add_argument("--algo", default=None, help="Algorithm for metabolic modeling (default - gimme for transcriptomic, geckopy for proteomic)")
-#     args = p.parse_args()
+if __name__ == "__main__":
+    # inside the if block, as this file would be imported later d.line
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument("--branch", choices=["transcriptomic", "proteomic"], required=True)
+    p.add_argument("--task", choices=["annotate", "metabolic"])
+    p.add_argument("--input")
+    p.add_argument("--algo", default=None, help="Algorithm for metabolic modeling (default - gimme for transcriptomic, geckopy for proteomic)")
+    args = p.parse_args()
 
-#     # check
-#     if args.branch == "transcriptomic" and not args.task:
-#         p.error("--task is required when --branch is transcriptomic")
+    # check
+    if args.branch == "transcriptomic" and not args.task:
+        p.error("--task is required when --branch is transcriptomic")
 
-#     main_flow(args.branch, args.input, args.task, args.algo)
+    main_flow(args.branch, args.input, args.task, args.algo)

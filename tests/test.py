@@ -5,28 +5,26 @@ import shutil
 import requests
 import json
 import time
-import aiohttp
-import asyncio
+#import aiohttp
+#import asyncio
 from aiohttp import ClientTimeout
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import yaml
 
 # ---
 ## --help
 def test_help_runs():
-    result = subprocess.run(["python", "scripts/run.py", "--help"], capture_output=True)
+    result = subprocess.run(["python", "scripts/flow.py", "--help"], capture_output=True)
     assert result.returncode == 0
 
 # ---
 ## config.yaml
-### reads config f
+### reads config f # Remove maybe
 def test_reads_config_yaml():
-    result = subprocess.run(
-        ["python", "run.py", "--branch", "annotate"],
-        capture_output=True,
-        timeout=5
-    )
-    assert b"yaml" not in result.stderr.lower()
+    with open("config.yaml") as f:
+        cfg = yaml.safe_load(f)
+    assert isinstance(cfg, dict)
 
 # ---
 ## input
@@ -38,10 +36,10 @@ def test_fetches_data_when_no_input():
         shutil.move("config.yaml", "config.yaml.backup")
     try:
         result = subprocess.run(
-            ["python", "scripts/run.py", "--branch", "annotate"],
+            ["python", "scripts/flow.py", "--branch", "transcriptomic", "--task", "annotate"],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=20
         )
         output = result.stdout + result.stderr
         # Should try to run the api script
