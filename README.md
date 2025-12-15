@@ -1,6 +1,6 @@
 # GEMcon
 
-[![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml)
+[![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml) [![Docker](https://img.shields.io/docker/v/toluene123/gemcon?label=toluene123/gemcon)](https://hub.docker.com/r/toluene123/gemcon)
 
 Pipeline for fetching expression /proteomic abundance data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
 
@@ -70,9 +70,10 @@ env. reproducibility
 ## Docker
 
 ```bash
+# pull the image
 docker pull toluene123/gemcon:latest
 
-docker run -it gemcon:latest bash # add --rm if you want post-exit deletion
+docker run -it gemcon:latest bash # add --rm if you want post-exit deletion; -v for mounting a volume.
 
 # check the config.yaml && ## run!
 gemcon --help
