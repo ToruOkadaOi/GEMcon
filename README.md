@@ -66,7 +66,6 @@ In the works
 
 GTex integration  
 env. reproducibility  
-updating Dockerfile
 
 ## Docker
 
@@ -75,9 +74,6 @@ docker pull toluene123/gemcon:latest
 
 docker run -it gemcon:latest bash # add --rm if you want post-exit deletion
 
-# make sure python, pyyaml and rich are installed
-micromamba install python=3.10 pyyaml rich -y
-
-# run!
-python3 scripts/run.py -h
+# check the config.yaml && ## run!
+gemcon --help
 ```
