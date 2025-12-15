@@ -73,7 +73,7 @@ env. reproducibility
 # pull the image
 docker pull toluene123/gemcon:latest
 
-docker run -it gemcon:latest bash # add --rm if you want post-exit deletion; -v for mounting a volume.
+docker run -it toluene123/gemcon:latest bash # add --rm if you want post-exit deletion; -v for mounting a volume.
 
 # check the config.yaml && ## run!
 gemcon --help

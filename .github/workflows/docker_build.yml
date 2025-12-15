@@ -1,0 +1,21 @@
+name: Docker build + smoke test
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t gemcon:test .
+
+      - name: Smoke test (CLI help)
+        run: |
+          docker run --rm gemcon:test gemcon --help
