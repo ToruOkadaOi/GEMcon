@@ -26,31 +26,44 @@ model_cfg = cfg.get('model_config', {})
 # tinit config part
 tinit_cfg = cfg.get('tinit', {})
 
-pattern = model_cfg.get('alt_transcript_pattern', '__COBAMPGPRDOT__[0-9]{1}') # keep defau. here??
+# get the pattern from the config
+pattern = model_cfg.get('alt_transcript_pattern')
+pattern = model_cfg.get('alt_transcript_pattern', '__COBAMPGPRDOT__[0-9]{1}') # keep def. here?? or ask inter.? ## update: fallback to Human-GEM pattern
 patt = re.compile(pattern)
 replace_alt_transcripts = lambda x: patt.sub('', x)
 
+# detect model type
 if args.model:
     model_path = args.model.strip()
 else:
     model_path = cfg.get("model")
+
+if model_path and ('_AT' in pattern or 'recon3d' in model_path.lower() or 'Recon3D' in model_path):
+    model_type = 'recon3d'
+    expr_suffix = '_recon3d.csv'
+else:
+    model_type = 'human-gem'
+    expr_suffix = '_gencode.csv'
+
 if not model_path:
     model_path = input("\nProvide full path to the metabolic model (.xml): ").strip()
+
 if not os.path.exists(model_path):
     raise FileNotFoundError(model_path)
 
+# expression file lookup
 if args.expr:
     expr_path = args.expr.strip()
 else:
     files = [f for f in os.listdir("data/data_processed") 
-             if f.startswith("expression_data_") and f.endswith("_gencode.csv")]
+             if f.startswith("expression_data_") and f.endswith(expr_suffix)]
     
     if not files:
-        expr_path = input("\nNo files found, please provide the abs. path to an expression .csv: ").strip()
+        expr_path = input(f"\nNo files found, provide path to expression .csv ({model_type} format): ").strip()
     else:
         paths = [os.path.join("data/data_processed", f) for f in files]
         expr_path = max(paths, key=os.path.getmtime)
-        print(f"Using the last made file: {expr_path}")
+        print(f"using {expr_path}")
 
 if not os.path.exists(expr_path):
     raise FileNotFoundError(expr_path)

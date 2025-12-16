@@ -1,5 +1,5 @@
 
-### Branch A (annotate_cells): api call(optional; api_hca_userinp.py) --> normalization(scanpy_norm.py) --> annotation(annotate_celltypes.py)
+### Branch Transcriptomic (annotate_cells): api call(optional; api_hca_userinp.py) --> normalization(scanpy_norm.py) --> annotation(annotate_celltypes.py)
 
 *This is (for the time being) seperated as a branch, because some processed matrix data from HCA contain annotation already (hopefully). In that case it'd be preferable to choose those*
 
@@ -24,7 +24,7 @@ So that in the next steps, pooling as suggested by [*Gustafsson et al.*](https:/
 
 ---
 
-### Branch B (metabolic):  api call(optional; api_hca_userinp.py) --> normalization(norm_pooling.py) --> gene symbol conversion (genetoensembl.py) --> contextualization algorithm (gimme.py | tinit.py | fastcore.py)
+### Branch Transcriptomic (metabolic):  api call(optional; api_hca_userinp.py) --> normalization(norm_pooling.py) --> gene symbol conversion (genetoensembl.py) --> contextualization algorithm (gimme.py | tinit.py | fastcore.py)
 
 `norm_pooling.py` :-
 
