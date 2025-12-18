@@ -1,5 +1,5 @@
 ## .loom or .h5ad
-input_file: /home/biodata/aman/data/data_processed/processed/hippocampus-development-human-brain-10XV2_annotated_normalized_annotated.h5ad
+input_file: /home/biodata/aman/data/data_raw/HCA_downloads/t-cell-activation-human-blood-10XV2.loom
 
 ##celltype: leave empty to pool all cells or specify column name
 celltype: "" 
@@ -8,18 +8,18 @@ celltype: ""
 gtf: /home/biodata/aman/data/data_raw/gencode.v49.annotation.gtf
 
 # currently tested with Human-GEM only
-# model: /home/biodata/aman/Human-GEM/model/Human-GEM.xml
-model: /home/biodata/Recon3D.xml
+model: /home/biodata/aman/Human-GEM/model/Human-GEM.xml
+# model: /home/biodata/Recon3D.xml
 
 # config for Human-GEM
-# model_config:
-#   objective_reaction: "MAR02388" # this points to biomass
-#   alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
+model_config:
+  objective_reaction: "MAR02388" # this points to biomass
+  alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
 
 ## config for recon3D
-model_config:
-  alt_transcript_pattern: '_AT[0-9]+$'  # Recon3D pattern
-  objective_reaction: 'ATPM'  # Recon3D objective
+# model_config:
+#   alt_transcript_pattern: '_AT[0-9]+$'  # Recon3D pattern
+#   objective_reaction: 'ATPM'  # Recon3D objective
 
 ## gimme config
 gimme:
