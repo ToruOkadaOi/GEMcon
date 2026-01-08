@@ -1,0 +1,50 @@
+## .loom or .h5ad
+input_file: /home/biodata/aman/data/data_raw/HCA_downloads/t-cell-activation-human-blood-10XV2.loom
+
+##celltype: leave empty to pool all cells or specify column name
+celltype: "" 
+
+## gene annotation file. obtained from Gencode usually. ### TODO: utility script for dwld
+gtf: /home/biodata/aman/data/data_raw/gencode.v49.annotation.gtf
+
+# currently tested with Human-GEM only
+model: /home/biodata/aman/Human-GEM/model/Human-GEM.xml
+# model: /home/biodata/Recon3D.xml
+
+# config for Human-GEM
+model_config:
+  objective_reaction: "MAR02388" # this points to biomass
+  alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
+
+## config for recon3D
+# model_config:
+#   alt_transcript_pattern: '_AT[0-9]+$'  # Recon3D pattern
+#   objective_reaction: 'ATPM'  # Recon3D objective
+
+## gimme config
+gimme:
+  obj_frac: 0.1
+  flux_threshold: 0.25
+  solver: "CPLEX"
+
+## tinit config
+tinit:
+  solver: "CPLEX"
+  essential_reactions:
+    - "MAR13082" 
+  nomenclature: "ensembl_gene_id" 
+  
+## for ref. others are ## NOMENCLATURES: [“hgnc_id”,”symbol”,”name”,”entrez_id”,”ensembl_gene_id”,”vega_id”,”ucsc_id”,”ccds_id”, “uniprot_ids”,“pubmed_id”,”omim_id”,”locus_group”,”locus_type”,”alias_symbol”,”alias_name”, “prev_symbol”,”prev_name”, “ena”,”refseq_accession”,”rna_central_ids”] # troppo docs
+
+## save dir for extracted model
+output:
+  models_dir: ./models
+
+geckopy:
+  ec_model: "/home/biodata/aman/data/ecHumanGEM_expanded.xml"
+  paxdb_data: "/home/biodata/aman/data/data_raw/paxdb_human_data/9606-WHOLE_ORGANISM-integrated.txt"
+  cell_params:
+    vol: 2.3e-12
+    dens: 1.05
+    water: 0.7
+  solver: "CPLEX"

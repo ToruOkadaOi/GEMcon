@@ -1,5 +1,5 @@
 ## .loom or .h5ad
-input_file: /home/biodata/aman/data/data_raw/HCA_downloads/t-cell-activation-human-blood-10XV2.loom
+#input_file: /home/biodata/aman/data/data_raw/HCA_downloads/t-cell-activation-human-blood-10XV2.loom
 
 ##celltype: leave empty to pool all cells or specify column name
 celltype: "" 
