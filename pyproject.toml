@@ -12,7 +12,6 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
-
 dependencies = [
     "typer>=0.17.0",
     "prefect>=3.0.0",
@@ -21,12 +20,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest"
-]
+dev = ["pytest"]
 
 [project.scripts]
-gemcon = "scripts.cli:app"
+gemcon = "metabolic_modeling.cli:app"
 
 [tool.setuptools]
-packages = ["scripts"]
+packages = ["metabolic_modeling"]
