@@ -6,7 +6,8 @@ gemcon.egg-info/dependency_links.txt
 gemcon.egg-info/entry_points.txt
 gemcon.egg-info/requires.txt
 gemcon.egg-info/top_level.txt
+metabolic_modeling/__init__.py
+scripts/__init__.py
 scripts/cli.py
 scripts/flow.py
-scripts/run.py
 tests/test.py

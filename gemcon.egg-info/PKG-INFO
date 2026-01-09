@@ -15,7 +15,7 @@ Requires-Dist: pytest; extra == "dev"
 
 # GEMcon
 
-[![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml)
+[![test_ga](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml/badge.svg)](https://github.com/ToruOkadaOi/GEMcon/actions/workflows/test.yml) [![Docker](https://img.shields.io/docker/v/toluene123/gemcon?label=toluene123/gemcon)](https://hub.docker.com/r/toluene123/gemcon)
 
 Pipeline for fetching expression /proteomic abundance data and building **context-specific human metabolic models** ([Human-GEM](https://github.com/SysBioChalmers/Human-GEM) based)
 
@@ -49,7 +49,7 @@ conda env create -f envs/gecko_env.yml
 ### 3. Usage
 ```bash
 # Inside GEMcon directory
-python scripts/cli.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [--input <file>]
+python scripts/cli.py --branch <transcriptomic|proteomic> [--task <annotate|metabolic>] [--algo <algorithm>] [--input <file>]
 ```
 - `--branch` is required
 - `--algo` is optional. Choices:
@@ -58,6 +58,15 @@ python scripts/cli.py --branch <transcriptomic|proteomic> [--algo <algorithm>] [
   - fastcore  (*testing*) 
   - imat      (*testing*) 
 - `--input` is optional
+
+### Optional
+
+```bash
+# Use as CLI instead
+pip install -e . # install
+
+gemcon --branch <transcriptomic|proteomic> [--task <annotate|metabolic>] [--algo <algorithm>] [--input <file>] # run!
+```
 
 ### 4. Results
 
@@ -70,16 +79,17 @@ In the works
 
 ### TODOs
 
+GTex integration  
+env. reproducibility  
+
 ## Docker
 
 ```bash
+# pull the image
 docker pull toluene123/gemcon:latest
 
-docker run -it gemcon:latest bash # add --rm if you want post-exit deletion
+docker run -it toluene123/gemcon:latest bash # add --rm if you want post-exit deletion; -v for mounting a volume.
 
-# make sure python, pyyaml and rich are installed
-micromamba install python=3.10 pyyaml rich -y
-
-# run!
-python3 scripts/run.py -h
+# check the config.yaml && ## run!
+gemcon --help
 ```

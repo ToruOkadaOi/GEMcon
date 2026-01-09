@@ -1,2 +1,2 @@
 [console_scripts]
-gemcon = scripts.cli:app
+gemcon = metabolic_modeling.cli:app
