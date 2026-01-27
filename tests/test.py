@@ -55,7 +55,7 @@ def test_fetches_data_when_no_input():
 base_url = "https://service.azul.data.humancellatlas.org/index/files"
 def test_api_reachable():
     filters = {"fileFormat": {"is": ["loom"]}}
-    params = {"catalog": "dcp55", "filters": json.dumps(filters), "size": 1}
+    params = {"catalog": "dcp56", "filters": json.dumps(filters), "size": 1}
     r = requests.get(base_url, params=params)
     assert r.status_code == 200
 
