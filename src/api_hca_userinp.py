@@ -216,7 +216,7 @@ def main():
     console.print() 
 
     size=100
-    catalog = "dcp55"
+    catalog = "dcp56" # they keep changing this damn
 
     base_url = "https://service.azul.data.humancellatlas.org/index/files"
 
