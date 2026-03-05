@@ -149,6 +149,7 @@ dependencies:
       - stack-data==0.6.3
       - tornado==6.5.2
       - traitlets==5.14.3
+      - riptide>=3.4.0
       - troppo==0.0.7
       - wcwidth==0.2.14
 prefix: /home/biodata/miniconda3/envs/cplex_aman_new

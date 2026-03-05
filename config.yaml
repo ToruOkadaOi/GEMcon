@@ -40,6 +40,25 @@ tinit:
 output:
   models_dir: ./models
 
+## riptide config (Jenior et al., 2020 - PLOS Comp Biol)
+riptide:
+  mode: "contextualize"       # "contextualize" (single run) or "maxfit" (iterative best-fit)
+  fraction: 0.8               # minimum objective flux fraction (contextualize mode)
+  samples: 500                # number of flux samples to collect
+  prune: true                 # perform pruning of zero-flux subnetworks
+  conservative: false         # conservatively remove inactive reactions based on GPR rules
+  objective: true             # constrain previous objective function
+  additive: false             # pool transcription abundances for multi-gene reactions
+  set_bounds: true            # use FVA results to set new reaction bounds
+  gpr: false                  # consider GPR rules during coefficient assignment
+  threshold: 1.0e-8           # minimum flux to avoid pruning
+  tasks: []                   # gene/reaction IDs for forced inclusion
+  exclude: []                 # reaction IDs for forced exclusion
+  # maxfit-specific parameters (only used when mode is "maxfit")
+  frac_min: 0.25              # lower bound of fraction range
+  frac_max: 0.85              # upper bound of fraction range
+  frac_step: 0.1              # step size for fraction range
+
 geckopy:
   ec_model: "/home/biodata/aman/data/ecHumanGEM_expanded.xml"
   paxdb_data: "/home/biodata/aman/data/data_raw/paxdb_human_data/9606-WHOLE_ORGANISM-integrated.txt"
