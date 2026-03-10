@@ -193,7 +193,7 @@ print(f"CORDA reconstruction complete!")
 print(f"Included reactions: {corda_obj.included}")
 
 # Build context-specific model
-ctx_rxns = [r.id for r in model.reactions if r.id in corda_obj.included]
+ctx_rxns = [r.id for r in model.reactions if corda_obj.included.get(r.id, False)]
 ctx_model = model.copy()
 to_remove = [r for r in ctx_model.reactions if r.id not in ctx_rxns]
 ctx_model.remove_reactions(to_remove, remove_orphans=True)
@@ -217,7 +217,14 @@ conf_df = pd.DataFrame(
     [{"reaction_id": k, "confidence": v} for k, v in conf_reactions.items()]
 )
 conf_path = os.path.join(mod_dir, f"corda_reaction_confidences_{base}.tsv")
-conf_df.to_csv(conf_path, sep="\t", index=False)
+# Use csv module to avoid pandas version compatibility issues
+import csv
+
+with open(conf_path, "w", newline="") as f:
+    writer = csv.writer(f, delimiter="\t")
+    writer.writerow(["reaction_id", "confidence"])
+    for k, v in conf_reactions.items():
+        writer.writerow([k, v])
 print(f"Saved reaction confidences to: {conf_path}")
 
 # Print objective value
