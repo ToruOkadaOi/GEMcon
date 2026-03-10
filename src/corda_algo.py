@@ -84,6 +84,9 @@ base = os.path.splitext(os.path.basename(expr_path))[0]
 # Load model
 print(f"Loading model: {model_path}")
 model = cobra.io.read_sbml_model(model_path)
+model.solver = (
+    "cplex"  # choosing the faster solver (change to "glpk" if CPLEX unavailable)
+)
 
 # Load expression data
 expression_data = pd.read_csv(expr_path, index_col=0)
@@ -167,7 +170,7 @@ print("Mapping gene confidences to reaction confidences using GPR rules...")
 conf_reactions = {}
 for rxn in model.reactions:
     if rxn.gene_reaction_rule:
-        conf = reaction_confidence(rxn.gene_reaction_rule, conf_genes)
+        conf = reaction_confidence(rxn, conf_genes)
         conf_reactions[rxn.id] = conf
     else:
         # No GPR rule - unknown confidence
