@@ -75,6 +75,8 @@ base_url = "https://service.azul.data.humancellatlas.org/index/files"
 
 def get_latest_catalog():
     """Fetch the latest DCP catalog from HCA API."""
+    import re
+
     try:
         r = requests.get(
             "https://service.azul.data.humancellatlas.org/index/catalogs", timeout=10
@@ -83,14 +85,11 @@ def get_latest_catalog():
         catalogs = r.json().get("catalogs", {})
         dcp_catalogs = [k for k in catalogs if k.startswith("dcp")]
 
-        # Extract numeric part for sorting (handles dcp57, dcp57-it, etc.)
-        def get_catalog_num(name):
-            import re
+        def get_num(name):
+            m = re.search(r"dcp(\d+)", name)
+            return int(m.group(1)) if m else 0
 
-            match = re.search(r"dcp(\d+)", name)
-            return int(match.group(1)) if match else 0
-
-        dcp_catalogs.sort(key=get_catalog_num)
+        dcp_catalogs.sort(key=get_num)
         return dcp_catalogs[-1] if dcp_catalogs else "dcp57"
     except Exception:
         return "dcp57"

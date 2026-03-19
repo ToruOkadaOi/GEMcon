@@ -33,6 +33,8 @@ from pythonjsonlogger import jsonlogger
 
 def get_latest_catalog():
     """Fetch the latest DCP catalog from HCA API."""
+    import re
+
     try:
         r = requests.get(
             "https://service.azul.data.humancellatlas.org/index/catalogs", timeout=10
@@ -40,7 +42,12 @@ def get_latest_catalog():
         r.raise_for_status()
         catalogs = r.json().get("catalogs", {})
         dcp_catalogs = [k for k in catalogs if k.startswith("dcp")]
-        dcp_catalogs.sort(key=lambda x: int(x[3:]))
+
+        def get_num(name):
+            m = re.search(r"dcp(\d+)", name)
+            return int(m.group(1)) if m else 0
+
+        dcp_catalogs.sort(key=get_num)
         return dcp_catalogs[-1] if dcp_catalogs else "dcp57"
     except Exception as e:
         logging.warning(f"Could not fetch latest catalog, falling back to dcp57: {e}")
