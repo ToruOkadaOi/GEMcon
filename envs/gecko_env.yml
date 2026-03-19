@@ -1,6 +1,7 @@
 name: gecko_aman
 channels:
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
@@ -58,6 +59,7 @@ dependencies:
   - ptyprocess=0.7.0=pyhd3deb0d_0
   - pure_eval=0.2.3=pyhd8ed1ab_0
   - python=3.8.20=h4a871b0_2_cpython
+  - python-libsbml=5.20.4=py38h6d02427_2
   - python_abi=3.8=8_cp38
   - pyzmq=26.2.0=py38h6c80b9a_0
   - readline=8.2=h8c095d6_2
@@ -66,7 +68,7 @@ dependencies:
   - tk=8.6.13=noxft_ha0e22de_103
   - tornado=6.4.1=py38hfb59056_0
   - traitlets=5.14.3=pyhd8ed1ab_0
-  - tree=2.2.1=hb9d3cd8_0
+  - typing_extensions=4.12.2=pyha770c72_0
   - wcwidth=0.2.13=pyhd8ed1ab_0
   - wheel=0.45.1=pyhd8ed1ab_0
   - xz=5.8.1=hbcc6ac9_2
@@ -79,12 +81,12 @@ dependencies:
       - annotated-types==0.7.0
       - anyio==4.5.2
       - appdirs==1.4.4
-      - certifi==2026.2.25
-      - charset-normalizer==3.4.6
+      - certifi==2025.11.12
+      - charset-normalizer==3.4.4
       - cobra==0.27.0
       - depinfo==1.7.0
       - diskcache==5.6.3
-      - exceptiongroup==1.3.1
+      - exceptiongroup==1.3.0
       - future==1.0.0
       - geckopy==0.0.1
       - h11==0.16.0
@@ -102,19 +104,18 @@ dependencies:
       - pydantic-core==2.27.2
       - pygments==2.19.2
       - python-dateutil==2.9.0.post0
-      - python-libsbml==5.21.1
-      - pytz==2026.1.post1
-      - pyyaml==6.0.3
+      - pytz==2025.2
       - requests==2.32.4
-      - rich==14.3.3
+      - rich==14.2.0
       - ruamel-yaml==0.18.16
       - ruamel-yaml-clib==0.2.8
       - six==1.17.0
       - sniffio==1.3.1
-      - swiglpk==5.0.13
+      - swiglpk==5.0.12
       - sympy==1.13.3
-      - tqdm==4.67.3
+      - tqdm==4.67.1
       - typing-extensions==4.13.2
       - urllib3==2.2.3
       - zipp==3.20.2
+      - pyyaml
 # prefix is set automatically by conda on creation

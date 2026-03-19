@@ -42,3 +42,6 @@ Human-GEM/
 # Shell history
 .profile/
 .history/
+models/*.xml
+models/*.tsv
+kgx/

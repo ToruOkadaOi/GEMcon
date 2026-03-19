@@ -24,12 +24,19 @@ RUN chown -R $MAMBA_USER:$MAMBA_USER /workspace
 
 # Create all conda environments, install base utils, install cli, and clean up in one layer
 RUN micromamba create -y -n scanpy_legacy -f /tmp/env_specs/scanpy_env.yml && \
-    micromamba create -y -n cplex_aman    -f /tmp/env_specs/cplex_env.yml    && \
+    micromamba create -y -n cplex_aman_new -f /tmp/env_specs/cplex_env.yml && \
     micromamba create -y -n gecko_aman    -f /tmp/env_specs/gecko_env.yml    && \
+    micromamba run -n gecko_aman pip install --force-reinstall --no-cache-dir \
+        git+https://github.com/ginkgobioworks/geckopy.git && \
+    micromamba run -n cplex_aman_new pip install "numpy<2" && \
     micromamba install -y python=3.10 pyyaml rich typer prefect && \
     micromamba run -n base python -m pip install -e . && \
     micromamba clean -afy && \
     rm -rf /tmp/env_specs
+
+# Suppress Prefect telemetry and noise
+ENV DO_NOT_TRACK=1
+ENV PREFECT_LOGGING_LEVEL=ERROR
 
 # Activate; ## To have an environment active during a RUN command
 ENV MAMBA_DOCKERFILE_ACTIVATE=1
