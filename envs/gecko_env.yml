@@ -119,4 +119,4 @@ dependencies:
       - typing-extensions==4.13.2
       - urllib3==2.2.3
       - zipp==3.20.2
-prefix: /home/biodata/miniconda3/envs/gecko_aman
+# prefix is set automatically by conda on creation

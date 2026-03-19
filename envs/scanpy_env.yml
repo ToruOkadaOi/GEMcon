@@ -260,4 +260,4 @@ dependencies:
       - texttable==1.7.0
       - typing-inspection==0.4.2
       - yarl==1.22.0
-prefix: /home/biodata/miniconda3/envs/scanpy_legacy
+# prefix is set automatically by conda on creation
