@@ -42,6 +42,10 @@ This code will read a gtf file and maps the expression data to ensembles gene id
 
 `fastcore.py` :-
 
+`riptide_algo.py` :-
+
+RIPTiDe (Reaction Inclusion by Parsimony and Transcript Distribution). Combines flux minimization (pFBA) weighted by transcript distribution to identify the most energy-efficient pathways that include highly transcribed enzymes. Supports single-run (contextualize) and iterative best-fit (maxfit) modes. Reference: Jenior et al., 2020 - PLOS Comp Biol.
+
 `pymCADRE.py` :-
 
 ---

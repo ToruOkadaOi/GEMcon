@@ -13,10 +13,11 @@ console = Console()
 algorithms = {
     "gimme": ("gimme.py", "cplex"),
     "tinit": ("tinit.py", "cplex"),
-    "corda": ("corda_algo.py", "cplex"),  # works with free GLPK solver
+    "corda": ("corda_algo.py", "cplex"),
     "fastcore": ("fastcore_beta.py", "cplex"),
     "geckopy": ("gecko_pipeline.py", "gecko"),
     "imat": ("imat_beta.py", "cplex"),
+    "riptide": ("riptide_algo.py", "cplex"),
     #    "cadre":       ("pymCADRE.py", "cplex"), # sep. env also needed
 }
 

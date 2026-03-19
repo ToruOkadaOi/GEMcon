@@ -33,29 +33,37 @@ tinit:
   essential_reactions:
     - "MAR13082" 
   nomenclature: "ensembl_gene_id" 
-  
-## for ref. others are ## NOMENCLATURES: [“hgnc_id”,”symbol”,”name”,”entrez_id”,”ensembl_gene_id”,”vega_id”,”ucsc_id”,”ccds_id”, “uniprot_ids”,“pubmed_id”,”omim_id”,”locus_group”,”locus_type”,”alias_symbol”,”alias_name”, “prev_symbol”,”prev_name”, “ena”,”refseq_accession”,”rna_central_ids”] # troppo docs
+
+## for ref. others are ## NOMENCLATURES: ["hgnc_id","symbol","name","entrez_id","ensembl_gene_id","vega_id","ucsc_id","ccds_id", "uniprot_ids","pubmed_id","omim_id","locus_group","locus_type","alias_symbol","alias_name", "prev_symbol","prev_name", "ena","refseq_accession","rna_central_ids"] # troppo docs
 
 ## save dir for extracted model
 output:
   models_dir: ./models
 
-## corda config (Schultz et al. 2016 - works with free GLPK solver!)
-## Install: pip install corda (from https://github.com/resendislab/corda)
-## Uses 5 confidence levels: -1 (absent), 0 (unknown), 1 (low), 2 (medium), 3 (high)
+## riptide config (Jenior et al., 2020 - PLOS Comp Biol)
+riptide:
+  mode: "contextualize"       # "contextualize" (single run) or "maxfit" (iterative best-fit)
+  fraction: 0.8               # minimum objective flux fraction (contextualize mode)
+  samples: 500                # number of flux samples to collect
+  prune: true                 # perform pruning of zero-flux subnetworks
+  conservative: false         # conservatively remove inactive reactions based on GPR rules
+  objective: true             # constrain previous objective function
+  additive: false             # pool transcription abundances for multi-gene reactions
+  set_bounds: true            # use FVA results to set new reaction bounds
+  gpr: false                  # consider GPR rules during coefficient assignment
+  threshold: 1.0e-8           # minimum flux to avoid pruning
+  tasks: []                   # gene/reaction IDs for forced inclusion
+  exclude: []                 # reaction IDs for forced exclusion
+  frac_min: 0.25              # lower bound of fraction range (maxfit mode)
+  frac_max: 0.85              # upper bound of fraction range (maxfit mode)
+  frac_step: 0.1              # step size for fraction range (maxfit mode)
+
+## corda config (Schultz et al. 2016)
 corda:
-  # Quantile-based thresholds for expression to confidence mapping
-  # Default: 5%, 25%, 50%, 75% percentiles
-  quantile_absent: 0.05    # expression below this -> confidence -1
-  quantile_unknown: 0.25   # expression below this -> confidence 0
-  quantile_low: 0.50       # expression below this -> confidence 1
-  quantile_medium: 0.75    # expression below this -> confidence 2, above -> confidence 3
-  # Or use absolute thresholds (override quantiles if set)
-  # threshold_absent: null
-  # threshold_unknown: null
-  # threshold_low: null
-  # threshold_medium: null
-  # Metabolites that must be producible (optional)
+  quantile_absent: 0.05
+  quantile_unknown: 0.25
+  quantile_low: 0.50
+  quantile_medium: 0.75
   met_prod: []
 
 geckopy:

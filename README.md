@@ -40,7 +40,8 @@ python scripts/cli.py --branch <transcriptomic|proteomic> [--task <annotate|meta
 - `--algo` is optional. Choices:
   - gimme 
   - tinit 
-  - corda    (works with free GLPK solver)
+  - riptide
+  - corda
   - fastcore  (*testing*) 
   - imat      (*testing*) 
 - `--input` is optional
