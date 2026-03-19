@@ -1,8 +1,6 @@
 __author__ = "Aman Nalakath"
 __description__ = "Downloads data from Human Cell Atlas as per the user needs"
 
-#--- code written with .loom files in mind i.e DCP processed matrix with just 1 file in the project.  
-# TODO: Many projects have multiple count matrix files (if intend on using .mtx and its variants). Think of scrapping all this together if user is going to use those instead ## add before pd.DataFrame printing ---#
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import requests
@@ -20,13 +18,34 @@ from rich.console import Console
 from rich.table import Table
 import yaml
 from rich.progress import (
-    Progress, BarColumn, TimeElapsedColumn,
-    TimeRemainingColumn, DownloadColumn, TransferSpeedColumn
+    Progress,
+    BarColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+    DownloadColumn,
+    TransferSpeedColumn,
 )
 import sys
 import logging
 from pathlib import Path
 from pythonjsonlogger import jsonlogger
+
+
+def get_latest_catalog():
+    """Fetch the latest DCP catalog from HCA API."""
+    try:
+        r = requests.get(
+            "https://service.azul.data.humancellatlas.org/index/catalogs", timeout=10
+        )
+        r.raise_for_status()
+        catalogs = r.json().get("catalogs", {})
+        dcp_catalogs = [k for k in catalogs if k.startswith("dcp")]
+        dcp_catalogs.sort(key=lambda x: int(x[3:]))
+        return dcp_catalogs[-1] if dcp_catalogs else "dcp57"
+    except Exception as e:
+        logging.warning(f"Could not fetch latest catalog, falling back to dcp57: {e}")
+        return "dcp57"
+
 
 # log template ## betterstack.com
 logger = logging.getLogger(__name__)
@@ -55,6 +74,7 @@ logger.setLevel(logging.DEBUG)
 
 console = Console()
 
+
 class File(BaseModel):
     name: str
     format: Optional[str] = None
@@ -62,35 +82,42 @@ class File(BaseModel):
     azul_url: Optional[str] = None
     drs_uri: Optional[str] = None
 
+
 class Project(BaseModel):
     projectTitle: Optional[List[Optional[str]]] = None
     laboratory: Optional[List[Optional[str]]] = None
 
+
 class Sample(BaseModel):
     organ: Optional[List[Optional[str]]] = None
     disease: Optional[List[Optional[str]]] = None
+
 
 class Hit(BaseModel):
     projects: List[Project]
     samples: Optional[List[Sample]] = None
     files: List[File]
 
+
 timeout = ClientTimeout(total=None)
 headers = {"User-Agent": "Mozilla/5.0"}
 
-# download func; In 1 mb chunks
-async def download_file(url, filename, chunk_size=1024*1024, retries=3):
 
+# download func; In 1 mb chunks
+async def download_file(url, filename, chunk_size=1024 * 1024, retries=3):
     for i in range(retries):
         try:
             connector = aiohttp.TCPConnector(limit=10)
-            async with aiohttp.ClientSession(timeout=timeout, headers=headers, connector=connector) as session:
+            async with aiohttp.ClientSession(
+                timeout=timeout, headers=headers, connector=connector
+            ) as session:
                 async with session.get(url) as response:
-
                     if response.status != 200:
-                        logger.error("HTTP error", extra={"status": response.status, "url": url})
+                        logger.error(
+                            "HTTP error", extra={"status": response.status, "url": url}
+                        )
                         raise Exception(f"Failed: {response.status}")
-                    
+
                     total = response.content_length
 
                     # from rich.progress import (
@@ -106,36 +133,41 @@ async def download_file(url, filename, chunk_size=1024*1024, retries=3):
                         TimeRemainingColumn(),
                         TimeElapsedColumn(),
                     ) as progress:
-
                         task = progress.add_task(
-                            f"Downloading {os.path.basename(filename)}",
-                            total=total
+                            f"Downloading {os.path.basename(filename)}", total=total
                         )
 
                         with open(filename, "wb") as f:
-                            async for chunk in response.content.iter_chunked(chunk_size):
+                            async for chunk in response.content.iter_chunked(
+                                chunk_size
+                            ):
                                 try:
                                     f.write(chunk)
-                                    #raise RuntimeError("test")
+                                    # raise RuntimeError("test")
                                     progress.update(task, advance=len(chunk))
                                 except Exception:
-                                    logger.critical("failed to write chunks while downloading", exc_info=True)
+                                    logger.critical(
+                                        "failed to write chunks while downloading",
+                                        exc_info=True,
+                                    )
                                     raise
 
-## When the download fails (after retries the branch/pipeline) still continues. #TODO: think if this needs fixn
+            ## When the download fails (after retries the branch/pipeline) still continues. #TODO: think if this needs fixn
 
             print("Download complete:", filename)
             return
 
         except Exception as e:
-            print(f"Retry {i+1} failed:", e)
-            time.sleep(2 ** i)
+            print(f"Retry {i + 1} failed:", e)
+            time.sleep(2**i)
+
 
 def main():
-# This blocks checks if there is a config file in the root directory. This automode 
+    # This blocks checks if there is a config file in the root directory. This automode
     yaml_cfg = {}
     if os.path.exists("config.yaml"):
         import yaml
+
         with open("config.yaml") as f:
             yaml_cfg = yaml.safe_load(f) or {}
 
@@ -144,31 +176,89 @@ def main():
 
     if auto_mode:
         filters = hca_cfg.get("filters", {})
-        save_dir = hca_cfg.get("save_dir", "data/data_raw/HCA_downloads") #n default save location
-        choice = hca_cfg.get("index", 0) # download the first file if not specified
-        catalog = hca_cfg.get("catalog", "dcp55") # default to dcp54 catalog # update they just changed to dcp55 (wasted time)
-        size = hca_cfg.get("size", 100) # limit the size to 100? Change maybe??
+        save_dir = hca_cfg.get(
+            "save_dir", "data/data_raw/HCA_downloads"
+        )  # n default save location
+        choice = hca_cfg.get("index", 0)  # download the first file if not specified
+        catalog = hca_cfg.get(
+            "catalog", "dcp55"
+        )  # default to dcp54 catalog # update they just changed to dcp55 (wasted time)
+        size = hca_cfg.get("size", 100)  # limit the size to 100? Change maybe??
 
     # filters available on HCA
     supported_fields = [
-        "accessions", "aggregateLastModifiedDate", "aggregateSubmissionDate", "aggregateUpdateDate",
-        "assayType", "biologicalSex", "bionetworkName", "bundleUuid", "bundleVersion", "cellCount",
-        "cellLineType", "contactName", "contentDescription", "dataUseRestriction", "developmentStage",
-        "donorCount", "donorDisease", "duosId", "effectiveCellCount", "effectiveOrgan", "entryId",
-        "fileFormat", "fileId", "fileName", "fileSize", "fileSource", "fileVersion", "genusSpecies",
-        "institution", "instrumentManufacturerModel", "isIntermediate", "isTissueAtlasProject",
-        "laboratory", "lastModifiedDate", "libraryConstructionApproach", "matrixCellCount",
-        "modelOrgan", "modelOrganPart", "nucleicAcidSource", "organ", "organPart", "organismAge",
-        "organismAgeRange", "pairedEnd", "preservationMethod", "project", "projectDescription",
-        "projectEstimatedCellCount", "projectId", "projectTitle", "publicationTitle", "sampleDisease",
-        "sampleEntityType", "sampleId", "selectedCellType", "sourceId", "sourceSpec", "specimenDisease",
-        "specimenOrgan", "specimenOrganPart", "submissionDate", "tissueAtlas", "updateDate",
-        "workflow", "accessible"
+        "accessions",
+        "aggregateLastModifiedDate",
+        "aggregateSubmissionDate",
+        "aggregateUpdateDate",
+        "assayType",
+        "biologicalSex",
+        "bionetworkName",
+        "bundleUuid",
+        "bundleVersion",
+        "cellCount",
+        "cellLineType",
+        "contactName",
+        "contentDescription",
+        "dataUseRestriction",
+        "developmentStage",
+        "donorCount",
+        "donorDisease",
+        "duosId",
+        "effectiveCellCount",
+        "effectiveOrgan",
+        "entryId",
+        "fileFormat",
+        "fileId",
+        "fileName",
+        "fileSize",
+        "fileSource",
+        "fileVersion",
+        "genusSpecies",
+        "institution",
+        "instrumentManufacturerModel",
+        "isIntermediate",
+        "isTissueAtlasProject",
+        "laboratory",
+        "lastModifiedDate",
+        "libraryConstructionApproach",
+        "matrixCellCount",
+        "modelOrgan",
+        "modelOrganPart",
+        "nucleicAcidSource",
+        "organ",
+        "organPart",
+        "organismAge",
+        "organismAgeRange",
+        "pairedEnd",
+        "preservationMethod",
+        "project",
+        "projectDescription",
+        "projectEstimatedCellCount",
+        "projectId",
+        "projectTitle",
+        "publicationTitle",
+        "sampleDisease",
+        "sampleEntityType",
+        "sampleId",
+        "selectedCellType",
+        "sourceId",
+        "sourceSpec",
+        "specimenDisease",
+        "specimenOrgan",
+        "specimenOrganPart",
+        "submissionDate",
+        "tissueAtlas",
+        "updateDate",
+        "workflow",
+        "accessible",
     ]
 
     if not auto_mode:
         # ask user
-        path = input("\nPath to a config file for filtering (press Enter for manual input): \n").strip()
+        path = input(
+            "\nPath to a config file for filtering (press Enter for manual input): \n"
+        ).strip()
 
         # init dict for filter
         filters = {}
@@ -179,14 +269,16 @@ def main():
                 filters = json.load(f)
             print(f"\nLoaded filters from {path}")
         else:
-            #print("\nSupported fields:\n" + ", ".join(supported_fields))
+            # print("\nSupported fields:\n" + ", ".join(supported_fields))
             console.rule("[bold green]\nSupported Fields")
-            console.print() 
+            console.print()
             console.print(", ".join(supported_fields))
-            console.print() 
+            console.print()
 
             # get input for which fields to select
-            chosen = input("\nEnter fields to filter (comma separated, e.g. fileFormat,genusSpecies,isIntermediate, fileSource): ").strip()
+            chosen = input(
+                "\nEnter fields to filter (comma separated, e.g. fileFormat,genusSpecies,isIntermediate, fileSource): "
+            ).strip()
             # sanitize
             selected = [f.strip() for f in chosen.split(",") if f.strip()]
 
@@ -197,42 +289,48 @@ def main():
                     continue
 
                 # get input for getting the values for the fields selected in the step b4
-                val = input(f"\nEnter value(s) for '{f}' (comma separated, True/False if applicable): \n").strip()
+                val = input(
+                    f"\nEnter value(s) for '{f}' (comma separated, True/False if applicable): \n"
+                ).strip()
 
                 if not val:
                     continue
 
-                try: 
-                    # Function from ast lib. used here for passing in the User input directly as a bool. ≠ string. 
+                try:
+                    # Function from ast lib. used here for passing in the User input directly as a bool. ≠ string.
                     filters[f] = {"is": [ast.literal_eval(val)]}
-                except Exception: 
-                    filters[f] = {"is": [v.strip() for v in val.split(",") if v.strip()]}
+                except Exception:
+                    filters[f] = {
+                        "is": [v.strip() for v in val.split(",") if v.strip()]
+                    }
 
     # print("\nUsing filters:")
     # print(json.dumps(filters, indent=2))
     console.rule("[bold cyan]\nUsing filters")
-    console.print() 
+    console.print()
     console.print(filters)
-    console.print() 
+    console.print()
 
-    size=100
-    catalog = "dcp56" # they keep changing this damn
+    size = 100
+    catalog = get_latest_catalog()
 
     base_url = "https://service.azul.data.humancellatlas.org/index/files"
 
     def fetch_all_pages(catalog=catalog, filters=filters, size=50):
         params = {"catalog": catalog, "filters": json.dumps(filters), "size": size}
-        hits, url, page = [], base_url, 1 # empty list to store evrytg
+        hits, url, page = [], base_url, 1  # empty list to store evrytg
 
         while url:
-            #print(f"page {page}")
+            # print(f"page {page}")
             console.print(f"[yellow]Page {page}[/yellow]")
             r = requests.get(url, params=params if url == base_url else None)
             # stat at this point
             if r.status_code != 200:
-                #print("error", r.status_code, r.text[:200])
-                logger.error("HCA API request failed",
-                    extra={"status": r.status_code, "url": url})
+                # print("error", r.status_code, r.text[:200])
+                logger.error(
+                    "HCA API request failed",
+                    extra={"status": r.status_code, "url": url},
+                )
                 break
 
             data = r.json()
@@ -248,9 +346,9 @@ def main():
         return hits, facets
 
     raw_hits, facets = fetch_all_pages()
-    #raw_hits = fetch_all_pages()
+    # raw_hits = fetch_all_pages()
     hits = [Hit(**h) for h in raw_hits]
-    #print("pydantic validated:", len(hits))
+    # print("pydantic validated:", len(hits))
     console.print(f"[green]\nNumber of pages validated:[/green] {len(hits)}")
 
     formats = facets["fileFormat"]["terms"]
@@ -280,16 +378,18 @@ def main():
                 organ = "N/A"
                 disease = "N/A"
 
-    # Sasb4; in future add other metadata here
+            # Sasb4; in future add other metadata here
             for file in hit.files or []:
-                rows.append({
-                    "Project": project_title,
-                    "Project lab": lab_names,
-                    "Organ": organ,
-                    "Disease": disease,
-                    "File": file.name,
-                    "Url": file.azul_url or file.url
-                })
+                rows.append(
+                    {
+                        "Project": project_title,
+                        "Project lab": lab_names,
+                        "Organ": organ,
+                        "Disease": disease,
+                        "File": file.name,
+                        "Url": file.azul_url or file.url,
+                    }
+                )
 
     df = pd.DataFrame(rows)
 
@@ -300,7 +400,9 @@ def main():
 
     # choose the save location
     if not auto_mode:
-        save_dir = input("\nDirectory to save downloads (press Enter for default: data/data_raw/HCA_downloads): ").strip()
+        save_dir = input(
+            "\nDirectory to save downloads (press Enter for default: data/data_raw/HCA_downloads): "
+        ).strip()
         if not save_dir:
             save_dir = "data/data_raw/HCA_downloads"
     else:
@@ -310,24 +412,26 @@ def main():
 
     if not auto_mode:
         # allow user to specify
-        pd.set_option('display.max_rows', None)
-        #print(df[["File", "Organ", "Disease"]].reset_index())
+        pd.set_option("display.max_rows", None)
+        # print(df[["File", "Organ", "Disease"]].reset_index())
         console.rule("[bold magenta]\nAvailable Files")
-        console.print() 
+        console.print()
         console.print(df[["File", "Organ", "Disease"]].reset_index())
-        console.print() 
-        #pd.reset_option("display.max_rows")
+        console.print()
+        # pd.reset_option("display.max_rows")
         choice = int(input("\nWhich file to download? Enter the index: "))
     else:
         pass
 
     url = df.loc[choice, "Url"]
-    filename = str(os.path.join(save_dir, df.loc[choice, 'File'] or f"file_{choice+1}"))
-    #filename = str(filename)
+    filename = str(
+        os.path.join(save_dir, df.loc[choice, "File"] or f"file_{choice + 1}")
+    )
+    # filename = str(filename)
 
     df.to_csv(os.path.join(save_dir, "metadata.csv"), index=False)
 
-    #print(f"\nDownloading: {filename}")
+    # print(f"\nDownloading: {filename}")
     console.rule("[bold blue]Downloading File")
     console.print(filename)
 
@@ -336,6 +440,7 @@ def main():
     # To play nice with run.py
     with open("data/data_raw/_last_downloaded.txt", "w") as f:
         f.write(filename)
+
 
 if __name__ == "__main__":
     main()
