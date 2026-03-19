@@ -33,8 +33,8 @@ tinit:
   essential_reactions:
     - "MAR13082" 
   nomenclature: "ensembl_gene_id" 
-  
-## for ref. others are ## NOMENCLATURES: [“hgnc_id”,”symbol”,”name”,”entrez_id”,”ensembl_gene_id”,”vega_id”,”ucsc_id”,”ccds_id”, “uniprot_ids”,“pubmed_id”,”omim_id”,”locus_group”,”locus_type”,”alias_symbol”,”alias_name”, “prev_symbol”,”prev_name”, “ena”,”refseq_accession”,”rna_central_ids”] # troppo docs
+
+## for ref. others are ## NOMENCLATURES: ["hgnc_id","symbol","name","entrez_id","ensembl_gene_id","vega_id","ucsc_id","ccds_id", "uniprot_ids","pubmed_id","omim_id","locus_group","locus_type","alias_symbol","alias_name", "prev_symbol","prev_name", "ena","refseq_accession","rna_central_ids"] # troppo docs
 
 ## save dir for extracted model
 output:
@@ -54,10 +54,17 @@ riptide:
   threshold: 1.0e-8           # minimum flux to avoid pruning
   tasks: []                   # gene/reaction IDs for forced inclusion
   exclude: []                 # reaction IDs for forced exclusion
-  # maxfit-specific parameters (only used when mode is "maxfit")
-  frac_min: 0.25              # lower bound of fraction range
-  frac_max: 0.85              # upper bound of fraction range
-  frac_step: 0.1              # step size for fraction range
+  frac_min: 0.25              # lower bound of fraction range (maxfit mode)
+  frac_max: 0.85              # upper bound of fraction range (maxfit mode)
+  frac_step: 0.1              # step size for fraction range (maxfit mode)
+
+## corda config (Schultz et al. 2016)
+corda:
+  quantile_absent: 0.05
+  quantile_unknown: 0.25
+  quantile_low: 0.50
+  quantile_medium: 0.75
+  met_prod: []
 
 geckopy:
   ec_model: "/home/biodata/aman/data/ecHumanGEM_expanded.xml"

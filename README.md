@@ -41,6 +41,7 @@ python scripts/cli.py --branch <transcriptomic|proteomic> [--task <annotate|meta
   - gimme 
   - tinit 
   - riptide
+  - corda
   - fastcore  (*testing*) 
   - imat      (*testing*) 
 - `--input` is optional

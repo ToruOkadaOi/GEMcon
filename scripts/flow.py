@@ -13,6 +13,7 @@ console = Console()
 algorithms = {
     "gimme": ("gimme.py", "cplex"),
     "tinit": ("tinit.py", "cplex"),
+    "corda": ("corda_algo.py", "cplex"),
     "fastcore": ("fastcore_beta.py", "cplex"),
     "geckopy": ("gecko_pipeline.py", "gecko"),
     "imat": ("imat_beta.py", "cplex"),
