@@ -16,7 +16,7 @@ model_config:
   objective_reaction: "MAR02388"
   alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
 
-## config for Recon3D (uncomment and replace above model_config to use)
+## config for RECOND3D
 # model_config:
 #   alt_transcript_pattern: '_AT[0-9]+$'
 #   objective_reaction: 'ATPM'
@@ -38,7 +38,7 @@ tinit:
 output:
   models_dir: ./models
 
-## riptide config (Jenior et al., 2020 - PLOS Comp Biol)
+## riptide config
 riptide:
   mode: "contextualize"
   fraction: 0.8
@@ -56,7 +56,7 @@ riptide:
   frac_max: 0.85
   frac_step: 0.1
 
-## corda config (Schultz et al. 2016)
+## corda config
 corda:
   quantile_absent: 0.05
   quantile_unknown: 0.25
