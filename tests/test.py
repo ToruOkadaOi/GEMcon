@@ -84,6 +84,16 @@ def get_latest_catalog():
         r.raise_for_status()
         catalogs = r.json().get("catalogs", {})
         dcp_catalogs = [k for k in catalogs if k.startswith("dcp")]
+        # Prefer non-it catalogs (dcp57 over dcp57-it) - they have more file formats
+        base_catalogs = [k for k in dcp_catalogs if "-it" not in k]
+        if base_catalogs:
+
+            def get_num(name):
+                m = re.search(r"dcp(\d+)", name)
+                return int(m.group(1)) if m else 0
+
+            base_catalogs.sort(key=get_num)
+            return base_catalogs[-1]
 
         def get_num(name):
             m = re.search(r"dcp(\d+)", name)
