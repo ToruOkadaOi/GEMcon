@@ -40,6 +40,24 @@ tinit:
 output:
   models_dir: ./models
 
+## corda config (Schultz et al. 2016 - works with free GLPK solver!)
+## Install: pip install corda (from https://github.com/resendislab/corda)
+## Uses 5 confidence levels: -1 (absent), 0 (unknown), 1 (low), 2 (medium), 3 (high)
+corda:
+  # Quantile-based thresholds for expression to confidence mapping
+  # Default: 5%, 25%, 50%, 75% percentiles
+  quantile_absent: 0.05    # expression below this -> confidence -1
+  quantile_unknown: 0.25   # expression below this -> confidence 0
+  quantile_low: 0.50       # expression below this -> confidence 1
+  quantile_medium: 0.75    # expression below this -> confidence 2, above -> confidence 3
+  # Or use absolute thresholds (override quantiles if set)
+  # threshold_absent: null
+  # threshold_unknown: null
+  # threshold_low: null
+  # threshold_medium: null
+  # Metabolites that must be producible (optional)
+  met_prod: []
+
 geckopy:
   ec_model: "/home/biodata/aman/data/ecHumanGEM_expanded.xml"
   paxdb_data: "/home/biodata/aman/data/data_raw/paxdb_human_data/9606-WHOLE_ORGANISM-integrated.txt"
