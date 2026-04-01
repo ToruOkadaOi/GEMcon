@@ -30,7 +30,7 @@ GEMcon integrates abundance data from:
 
 ### Option A: Docker (recommended)
 
-The Docker image ships with all dependencies pre-configured — no conda or CPLEX setup required.
+Image comes with most dependencies preconfigured. CPLEX license is not included. After starting the container with your license mounted, run `install_cplex.sh` to complete setup.
 ```bash
 docker pull toluene123/gemcon:latest
 
