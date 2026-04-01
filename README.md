@@ -91,7 +91,7 @@ python scripts/cli.py --branch <transcriptomic|proteomic> [--task <annotate|meta
 
 Results are written to two directories:
 
-- **`results/`** — Final context-specific metabolic models
+- **`models/`** — Final context-specific metabolic models
 - **`data_processed/`** — Intermediate processed expression/abundance data
 
 ---
