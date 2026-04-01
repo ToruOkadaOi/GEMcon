@@ -11,7 +11,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = {text = "GPL-3.0"}
 
 dependencies = [
     "typer>=0.17.0",
@@ -29,4 +29,4 @@ dev = [
 gemcon = "scripts.cli:app"
 
 [tool.setuptools]
-packages = ["scripts"]
+packages = ["scripts", "src"]
