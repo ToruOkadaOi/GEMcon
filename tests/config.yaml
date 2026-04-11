@@ -15,10 +15,10 @@ tinit:
     - "R1"
 
 corda:
-  solver: "GLPK"
+  solver: "glpk"
 
 fastcore:
-  solver: "GLPK"
+  solver: "glpk"
 
 imat:
   solver: "GLPK"

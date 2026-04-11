@@ -41,7 +41,6 @@ def test_tinit():
     assert result is not None
 
 
-@pytest.mark.xfail(reason="CORDA uses hardcoded solver")
 def test_corda():
     result = run_algo(CordaAlgorithm)
     assert result is not None
