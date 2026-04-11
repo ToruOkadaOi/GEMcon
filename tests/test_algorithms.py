@@ -32,30 +32,36 @@ def run_algo(algo_class):
 
 def test_gimme():
     result = run_algo(GimmeAlgorithm)
-    assert result is not None
+    assert hasattr(result, "reactions")
+    assert len(result.reactions) <= 5
 
 
 @pytest.mark.xfail(reason="tINIT sets solver tolerances not supported by GLPK")
 def test_tinit():
     result = run_algo(TinitAlgorithm)
-    assert result is not None
+    assert hasattr(result, "reactions")
+    assert len(result.reactions) <= 5
 
 
 def test_corda():
     result = run_algo(CordaAlgorithm)
-    assert result is not None
+    assert hasattr(result, "reactions")
+    assert len(result.reactions) <= 5
 
 
 def test_riptide():
     result = run_algo(RiptideAlgorithm)
-    assert result is not None
+    assert hasattr(result, "reactions")
+    assert len(result.reactions) <= 5
 
 
 def test_fastcore():
     result = run_algo(FastcoreAlgorithm)
-    assert result is not None
+    assert hasattr(result, "reactions")
+    assert len(result.reactions) <= 5
 
 
 def test_imat():
     result = run_algo(ImatAlgorithm)
-    assert result is not None
+    assert hasattr(result, "reactions")
+    assert len(result.reactions) <= 5
