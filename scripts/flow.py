@@ -12,6 +12,7 @@ from src.algorithms import (
     RiptideAlgorithm,
     FastcoreAlgorithm,
     ImatAlgorithm,
+    GeckopyAlgorithm,
 )
 
 console = Console()
@@ -24,6 +25,7 @@ algorithms = {
     "fastcore": FastcoreAlgorithm,
     "imat": ImatAlgorithm,
     "riptide": RiptideAlgorithm,
+    "geckopy": GeckopyAlgorithm,
 }
 
 
@@ -54,17 +56,17 @@ def resolve_input_file(args_input, cfg):
         return cfg["input_file"]
 
     # fetch
-    run_cmd(["bash", "src/run_in_scanpy.sh", "src/api_hca_userinp.py"])
+    run_cmd(["python", "src/api_hca_userinp.py"])
     with open("data/data_raw/_last_downloaded.txt") as f:
         return f.read().strip()
 
 
 def branch_transcriptomic(input_file, cfg, task_type: str, algo: str = "gimme"):
-    if task_type == "annotate":
+if task_type == "annotate":
         run_cmd(
-            ["bash", "src/run_in_scanpy.sh", "src/scanpy_norm.py", "--input", input_file]
+            ["python", "src/scanpy_norm.py", "--input", input_file]
         )
-        run_cmd(["bash", "src/run_in_scanpy.sh", "src/annotate_celltypes.py"])
+        run_cmd(["python", "src/annotate_celltypes.py"])
 
     elif task_type == "metabolic":
         celltype = cfg.get("celltype")
@@ -72,13 +74,18 @@ def branch_transcriptomic(input_file, cfg, task_type: str, algo: str = "gimme"):
         model = cfg.get("model")
 
         # 1. normalizing
-        cmd = ["bash", "src/run_in_scanpy.sh", "src/norm_pooling.py", "--input", input_file]
+        cmd = [
+            "python",
+            "src/norm_pooling.py",
+            "--input",
+            input_file,
+        ]
         if celltype is not None:
             cmd += ["--celltype", celltype]
         run_cmd(cmd)
 
         # 2. id converting
-        cmd = ["bash", "src/run_in_scanpy.sh", "src/genetoensembl.py"]
+        cmd = ["python", "src/genetoensembl.py"]
         if gtf:
             cmd += ["--gtf", gtf]
         run_cmd(cmd)
@@ -91,8 +98,9 @@ def branch_transcriptomic(input_file, cfg, task_type: str, algo: str = "gimme"):
 
 
 def branch_proteomic(cfg, algo: str = "geckopy"):
-    # geckopy still needs its own env
-    run_cmd(["bash", "src/run_in_gecko.sh", "src/gecko_pipeline.py"])
+    AlgoClass = algorithms[algo]
+    algo_instance = AlgoClass(args=cfg)
+    algo_instance.run()
 
 
 def main_flow(
