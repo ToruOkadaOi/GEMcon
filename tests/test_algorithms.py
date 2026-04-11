@@ -35,7 +35,7 @@ def test_gimme():
     assert result is not None
 
 
-@pytest.mark.skip(reason="tINIT requires external data source")
+@pytest.mark.xfail(reason="tINIT sets solver tolerances not supported by GLPK")
 def test_tinit():
     result = run_algo(TinitAlgorithm)
     assert result is not None
