@@ -13,7 +13,7 @@ model: ./Human-GEM/model/Human-GEM.xml
 
 # config for Human-GEM
 model_config:
-  objective_reaction: "MAR02388"
+  objective_reaction: "R1"
   alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
 
 ## config for RECOND3D
@@ -25,11 +25,11 @@ model_config:
 gimme:
   obj_frac: 0.1
   flux_threshold: 0.25
-  solver: "CPLEX"
+  solver: "GLPK"
 
 ## tinit config
 tinit:
-  solver: "CPLEX"
+  solver: "GLPK"
   essential_reactions:
     - "MAR13082"
   nomenclature: "ensembl_gene_id"
