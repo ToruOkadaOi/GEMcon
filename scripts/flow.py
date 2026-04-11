@@ -62,10 +62,8 @@ def resolve_input_file(args_input, cfg):
 
 
 def branch_transcriptomic(input_file, cfg, task_type: str, algo: str = "gimme"):
-if task_type == "annotate":
-        run_cmd(
-            ["python", "src/scanpy_norm.py", "--input", input_file]
-        )
+    if task_type == "annotate":
+        run_cmd(["python", "src/scanpy_norm.py", "--input", input_file])
         run_cmd(["python", "src/annotate_celltypes.py"])
 
     elif task_type == "metabolic":
@@ -99,7 +97,8 @@ if task_type == "annotate":
 
 def branch_proteomic(cfg, algo: str = "geckopy"):
     AlgoClass = algorithms[algo]
-    algo_instance = AlgoClass(args=cfg)
+    args = type("Args", (), {"model": None, "expr": None, "format": None})()
+    algo_instance = AlgoClass(args=args)
     algo_instance.run()
 
 
