@@ -13,7 +13,6 @@ Reference:
 __author__ = "Aman Nalakath"
 
 import pandas as pd
-import numpy as np
 import cobra
 import os
 import argparse
@@ -129,7 +128,7 @@ if threshold_low is None:
 if threshold_medium is None:
     threshold_medium = gene_expr.quantile(quantile_medium)
 
-print(f"Confidence thresholds:")
+print("Confidence thresholds:")
 print(f"  Absent (-1): < {threshold_absent:.4f}")
 print(f"  Unknown (0): {threshold_absent:.4f} - {threshold_unknown:.4f}")
 print(f"  Low (1): {threshold_unknown:.4f} - {threshold_low:.4f}")
@@ -158,7 +157,7 @@ for gene_id, expr_val in gene_expr.items():
     gene_clean = str(gene_id).split(".")[0]
     conf_genes[gene_clean] = expr_to_confidence(expr_val)
 
-print(f"Gene confidence distribution:")
+print("Gene confidence distribution:")
 print(f"  Absent (-1): {sum(1 for v in conf_genes.values() if v == -1)}")
 print(f"  Unknown (0): {sum(1 for v in conf_genes.values() if v == 0)}")
 print(f"  Low (1): {sum(1 for v in conf_genes.values() if v == 1)}")
@@ -176,7 +175,7 @@ for rxn in model.reactions:
         # No GPR rule - unknown confidence
         conf_reactions[rxn.id] = 0
 
-print(f"Reaction confidence distribution:")
+print("Reaction confidence distribution:")
 print(f"  Absent (-1): {sum(1 for v in conf_reactions.values() if v == -1)}")
 print(f"  Unknown (0): {sum(1 for v in conf_reactions.values() if v == 0)}")
 print(f"  Low (1): {sum(1 for v in conf_reactions.values() if v == 1)}")
@@ -189,7 +188,7 @@ corda_obj = CORDA(model, conf_reactions, met_prod=met_prod)
 corda_obj.build()
 
 # Get the reconstructed model
-print(f"CORDA reconstruction complete!")
+print("CORDA reconstruction complete!")
 print(f"Included reactions: {corda_obj.included}")
 
 # Build context-specific model

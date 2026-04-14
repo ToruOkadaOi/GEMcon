@@ -16,6 +16,7 @@ p.add_argument("--tissue", required=True)
 args = p.parse_args()
 tissue = args.tissue
 
+
 def walk(obj):
     if isinstance(obj, dict):
         for v in obj.values():
@@ -24,6 +25,7 @@ def walk(obj):
         for item in obj:
             yield from walk(item)
     yield obj
+
 
 def get_urls(project_id="adult-gtex", keyword="bulk-gex/v10"):
     url = f"https://gtexportal.org/api/v2/dataset/openAccessFilesMetadata?project_id={project_id}"
@@ -37,24 +39,25 @@ def get_urls(project_id="adult-gtex", keyword="bulk-gex/v10"):
 
     return urls
 
+
 # Fetch only the 54 V10 files
 urls = get_urls()
 
 # Build DataFrame
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_colwidth', None)
-pd.set_option('display.max_rows', None)
-df = pd.DataFrame({
-    "name": [os.path.basename(u) for u in urls],
-    "url": urls
-})
+pd.set_option("display.max_columns", None)
+pd.set_option("display.max_colwidth", None)
+pd.set_option("display.max_rows", None)
+df = pd.DataFrame({"name": [os.path.basename(u) for u in urls], "url": urls})
 
 # print(df)
 
-tpm_df = df[df['name'].str.startswith("gene_tpm_v10")].copy()
-tpm_df['tissue'] = tpm_df['name'].str.replace('gene_tpm_v10_', '').str.replace('.gct.gz', '')
-tissues = tpm_df['tissue'].tolist()
+tpm_df = df[df["name"].str.startswith("gene_tpm_v10")].copy()
+tpm_df["tissue"] = (
+    tpm_df["name"].str.replace("gene_tpm_v10_", "").str.replace(".gct.gz", "")
+)
+tissues = tpm_df["tissue"].tolist()
 # print(tissues) # STDOUT and seek u.input
+
 
 # ------------
 async def download_tissue(tissue_name, output_path="."):
@@ -77,7 +80,7 @@ async def download_tissue(tissue_name, output_path="."):
     return str(out_file)
 
 
-out_file = asyncio.run(download_tissue(tissue)) # argparse
+out_file = asyncio.run(download_tissue(tissue))  # argparse
 
 if out_file is None:
     sys.exit(1)

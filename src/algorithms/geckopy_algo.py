@@ -16,7 +16,9 @@ class GeckopyAlgorithm(BaseAlgorithm):
         p = argparse.ArgumentParser()
         p.add_argument("--expr", help="Path to protein abundance file")
         p.add_argument("--model", help="Path to enzyme-constrained SBML model")
-        p.add_argument("--format", help="Abundance file format: paxdb or generic", default=None)
+        p.add_argument(
+            "--format", help="Abundance file format: paxdb or generic", default=None
+        )
         return p.parse_args()
 
     @property
@@ -55,7 +57,9 @@ class GeckopyAlgorithm(BaseAlgorithm):
 
     def _detect_format(self):
         """Detect abundance file format from args, config, or file content"""
-        fmt = getattr(self.args, "format", None) or self.cfg.get("geckopy", {}).get("format")
+        fmt = getattr(self.args, "format", None) or self.cfg.get("geckopy", {}).get(
+            "format"
+        )
         if fmt:
             return fmt
 
@@ -129,11 +133,15 @@ class GeckopyAlgorithm(BaseAlgorithm):
             df.columns = df.columns.str.lower()
 
             if "uniprot" not in df.columns or "abundance" not in df.columns:
-                raise ValueError("Generic format requires 'uniprot' and 'abundance' columns")
+                raise ValueError(
+                    "Generic format requires 'uniprot' and 'abundance' columns"
+                )
 
             prot = df[["uniprot", "abundance"]].copy()
             prot = prot.dropna(subset=["uniprot"])
-            prot = prot.rename(columns={"uniprot": "UniProt", "abundance": "copies_per_cell"})
+            prot = prot.rename(
+                columns={"uniprot": "UniProt", "abundance": "copies_per_cell"}
+            )
             prot["protein_gecko_id"] = prot["UniProt"].apply(lambda x: f"prot_{x}[c]")
             prot["stdev"] = df["stdev"] if "stdev" in df.columns else 0
 

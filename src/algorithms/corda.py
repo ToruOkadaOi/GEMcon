@@ -1,7 +1,6 @@
 import os
 import csv
 import argparse
-import pandas as pd
 from corda import CORDA, reaction_confidence
 
 from .base import BaseAlgorithm

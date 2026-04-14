@@ -1,7 +1,7 @@
 __author__ = "Aman Nalakath"
 
 import scanpy as sc
-import pandas as pd, numpy as np
+import pandas as pd
 import os
 import argparse
 from rich import print
@@ -20,10 +20,12 @@ console = Console()
 if args.input:
     choice = args.input.strip()
 else:
-    choice = Prompt.ask("[bold green]\nProvide the complete path to the .h5ad or .loom: ")
+    choice = Prompt.ask(
+        "[bold green]\nProvide the complete path to the .h5ad or .loom: "
+    )
 
 # determine .loom or .h5ad
-if os.path.splitext(os.path.basename(choice))[-1] == '.loom':
+if os.path.splitext(os.path.basename(choice))[-1] == ".loom":
     adata = sc.read_loom(f"{choice}")
 else:
     adata = sc.read_h5ad(f"{choice}")
@@ -49,10 +51,12 @@ else:
 adata.X = adata.layers["raw_counts"].copy()
 
 # check the labels
-print(adata.obs) # see if there is cell types
+print(adata.obs)  # see if there is cell types
 
 # see all the cell types  # to pool by cell type then
-table = Table(title="obs columns", title_style="bold cyan") # How to get the table to the center of tty?
+table = Table(
+    title="obs columns", title_style="bold cyan"
+)  # How to get the table to the center of tty?
 
 for col in adata.obs.columns:
     table.add_row(col)
@@ -63,7 +67,9 @@ console.print(table)
 if args.celltype is not None:
     col = args.celltype.strip()
 else:
-    col = Prompt.ask("\n[bold green]Enter the column name for pooling-by-celltype -- usually 'cell_type' (press Enter to pool all): ").strip()
+    col = Prompt.ask(
+        "\n[bold green]Enter the column name for pooling-by-celltype -- usually 'cell_type' (press Enter to pool all): "
+    ).strip()
 # gene names usually stored in .var
 genes = adata.var_names
 
@@ -85,18 +91,20 @@ else:
     for t in adata.obs[col].unique():
         # subset for this cell type
         sub = adata[adata.obs[col] == t]
-        
+
         # sum raw counts and convert to CPM
         x = sub.layers["raw_counts"].toarray().sum(axis=0)
         cpm = x / x.sum() * 1e6
-        
+
         # sanitize name
-        safe_name = str(t).replace(' ', '_').replace('/', '_').replace('\\', '_')
+        safe_name = str(t).replace(" ", "_").replace("/", "_").replace("\\", "_")
 
         # path for save
         output_path = f"{outdir}/{safe_name}.csv"
-        
+
         # save files
-        pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(output_path, index=False)
+        pd.DataFrame({"gene": genes, "expression": cpm}).to_csv(
+            output_path, index=False
+        )
         console.rule("[bold green]File Saved[/bold green]")
         console.print(f"[bold cyan]{output_path}[/bold cyan]")

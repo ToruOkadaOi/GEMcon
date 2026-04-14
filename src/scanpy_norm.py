@@ -1,7 +1,6 @@
 __author__ = "Aman Nalakath"
 
 import scanpy as sc
-import numpy as np
 import os
 import argparse
 
@@ -16,13 +15,13 @@ else:
     choice = input("\nProvide the complete path to the loom/h5ad file: ")
 
 # determine .loom or .h5ad
-if os.path.splitext(os.path.basename(choice))[-1] == '.loom':
+if os.path.splitext(os.path.basename(choice))[-1] == ".loom":
     adata = sc.read_loom(f"{choice}")
 else:
     adata = sc.read_h5ad(f"{choice}")
 
 # find the name of layers
-print('The name/s of the layers in the file downloaded are: ',adata.layers.keys())
+print("The name/s of the layers in the file downloaded are: ", adata.layers.keys())
 
 # to detect whether values look already normlized
 max_val = adata.X.max()
@@ -53,7 +52,7 @@ if needs_norm:
     adata.raw = adata.copy()
 
     # Setting a target sum so as not to default to median based normalization
-    sc.pp.normalize_total(adata, target_sum=1e4) # or 1e6
+    sc.pp.normalize_total(adata, target_sum=1e4)  # or 1e6
 
     # log (1+x) transform
     sc.pp.log1p(adata)
@@ -82,10 +81,10 @@ adata.write_h5ad(output_path)
 print(f"Saved normalized file to: {output_path}")
 print(adata.layers.keys())
 
-#cells = ## i([adata.obs]) #genes = ## i([adata.var])
+# cells = ## i([adata.obs]) #genes = ## i([adata.var])
 
 # Confirm everything
-print('Check before proceeding')
+print("Check before proceeding")
 
 print("\nRaw counts (first 20):")
 print(adata.layers["raw_counts"].data[:20])

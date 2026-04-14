@@ -1,11 +1,11 @@
 __author__ = "Aman Nalakath"
 __description__ = "Downloads data from Human Cell Atlas as per the user needs"
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Optional
 import requests
-from requests.exceptions import HTTPError
-import json, time
+import json
+import time
 import aiohttp
 import asyncio
 from aiohttp import ClientTimeout
@@ -15,8 +15,6 @@ import ast
 import logging
 from rich import print
 from rich.console import Console
-from rich.table import Table
-import yaml
 from rich.progress import (
     Progress,
     BarColumn,
@@ -26,7 +24,6 @@ from rich.progress import (
     TransferSpeedColumn,
 )
 import sys
-import logging
 from pathlib import Path
 from pythonjsonlogger import jsonlogger
 
