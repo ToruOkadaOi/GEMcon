@@ -4,7 +4,6 @@ import subprocess
 import os
 import yaml
 from typing import Optional
-from rich import print
 from rich.console import Console
 
 console = Console()

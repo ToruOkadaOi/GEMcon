@@ -1,7 +1,7 @@
 __author__ = "Aman Nalakath"
 
 import scanpy as sc
-import pandas as pd, numpy as np
+import pandas as pd
 import os
 import argparse
 from rich import print

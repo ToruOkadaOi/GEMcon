@@ -2,7 +2,12 @@ __author__ = "Aman Nalakath"
 
 import geckopy
 from geckopy.io import read_sbml_ec_model
-import argparse, os, requests, time, pandas as pd, yaml
+import argparse
+import os
+import requests
+import time
+import pandas as pd
+import yaml
 
 p = argparse.ArgumentParser()
 p.add_argument("--expr", help="Path to the protein abundance csv file")

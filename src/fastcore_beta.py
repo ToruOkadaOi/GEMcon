@@ -1,15 +1,10 @@
 import pandas as pd
-import numpy as np
 import cobra
 import re
 from troppo.omics.readers.generic import TabularReader
-from troppo.methods_wrappers import ModelBasedWrapper, ReconstructionWrapper
+from troppo.methods_wrappers import ReconstructionWrapper
 from troppo.omics.integration import CustomSelectionIntegrationStrategy
 from troppo.methods.reconstruction.fastcore import FASTcore, FastcoreProperties
-from troppo.omics.integration import ContinuousScoreIntegrationStrategy
-from troppo.methods.gapfill.fastcc import FastCC, FastCCProperties
-from cobra.io import read_sbml_model
-import numpy as np
 
 # parsing rule 
 patt = re.compile('__COBAMPGPRDOT__[0-9]{1}')

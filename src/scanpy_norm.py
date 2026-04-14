@@ -1,7 +1,6 @@
 __author__ = "Aman Nalakath"
 
 import scanpy as sc
-import numpy as np
 import os
 import argparse
 

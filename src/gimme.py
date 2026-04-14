@@ -4,7 +4,6 @@ __description__ = ""
 #TODO: logging + testing; prints --> rich;
 
 import pandas as pd
-import numpy as np
 import cobra
 import re
 import os
@@ -13,7 +12,7 @@ import yaml
 
 # Troppo imports
 from troppo.omics.readers.generic import TabularReader
-from troppo.methods_wrappers import ModelBasedWrapper, ReconstructionWrapper
+from troppo.methods_wrappers import ReconstructionWrapper
 from troppo.omics.integration import ContinuousScoreIntegrationStrategy
 from troppo.methods.reconstruction.gimme import GIMME, GIMMEProperties
 

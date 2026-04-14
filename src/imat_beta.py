@@ -5,11 +5,10 @@ import re
 import os
 from cobamp.core.linear_systems import get_default_solver
 from troppo.omics.readers.generic import TabularReader
-from troppo.methods_wrappers import ModelBasedWrapper, ReconstructionWrapper
+from troppo.methods_wrappers import ReconstructionWrapper
 from troppo.omics.integration import ContinuousScoreIntegrationStrategy
 from troppo.methods.reconstruction.imat import IMAT, IMATProperties
 import optlang
-from optlang.cplex_interface import Model as CPLEXModel
 
 print("COBAMP default solver:", get_default_solver())
 

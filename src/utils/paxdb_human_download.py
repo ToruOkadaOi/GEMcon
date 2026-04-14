@@ -1,22 +1,12 @@
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import requests
-from requests.exceptions import HTTPError
-import time
 import aiohttp
 import asyncio
 from aiohttp import ClientTimeout
-import pandas as pd
 import os
 import logging
 from rich import print
-from rich.console import Console
-from rich.table import Table
-import yaml
-from rich.progress import (
-    Progress, BarColumn, TimeElapsedColumn,
-    TimeRemainingColumn, DownloadColumn, TransferSpeedColumn
-)
 timeout = ClientTimeout(total=None)
 headers = {"User-Agent": "Mozilla/5.0"}
 
