@@ -7,7 +7,6 @@ from aiohttp import ClientTimeout
 import os
 import logging
 from rich import print
-
 timeout = ClientTimeout(total=None)
 headers = {"User-Agent": "Mozilla/5.0"}
 
