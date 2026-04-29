@@ -27,8 +27,8 @@ model_genes = set(g.id for g in model.genes)
 expr_genes = set(expr.index)
 
 direct = model_genes & expr_genes
-model_no_at = set(g.id.split('_AT')[0] for g in model.genes)
-expr_no_at = set(str(g).split('_AT')[0] for g in expr.index)
+model_no_at = set(g.id.split("_AT")[0] for g in model.genes)
+expr_no_at = set(str(g).split("_AT")[0] for g in expr.index)
 no_at = model_no_at & expr_no_at
 
 print(f"overlap: {len(no_at)} genes")

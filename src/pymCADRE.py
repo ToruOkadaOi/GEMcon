@@ -1,8 +1,8 @@
-# model = 
+# model =
 
-# genes = 
+# genes =
 
-# confidence_score = 
+# confidence_score =
 
 # uniquity score?
 
@@ -17,8 +17,8 @@ import pandas as pd
 #############################################################################
 
 # read model
-model = read_sbml_model('/home/biodata/aman/Recon3D.xml')
-print('Human Model is imported ... ')
+model = read_sbml_model("/home/biodata/aman/Recon3D.xml")
+print("Human Model is imported ... ")
 
 # format reaction names in Recon2
 # for idx,g in enumerate(model.reactions):
@@ -46,14 +46,16 @@ false = False
 # store conf. scores for generic model's reactions, value is None if no conf.score is assigned
 confidence_scores = {}
 
-print('Starting database calls ...')
-c=0
-for idx,r in enumerate(model.reactions):
-    print('Reaction ID:', r.id)
+print("Starting database calls ...")
+c = 0
+for idx, r in enumerate(model.reactions):
+    print("Reaction ID:", r.id)
     try:
         # make a get request to BiGG models
 
-        bigg_response = requests.get("http://bigg.ucsd.edu/api/v2/universal/reactions/" + r.id)
+        bigg_response = requests.get(
+            "http://bigg.ucsd.edu/api/v2/universal/reactions/" + r.id
+        )
         bigg_json = bigg_response.content.decode("utf-8")
         info = json.loads(bigg_json)
         # print('info:',info)
@@ -62,48 +64,51 @@ for idx,r in enumerate(model.reactions):
         for i in old_id:
             # call reaction from VMH using the respective old identifier
             vmh_res = requests.get(
-                "https://www.vmh.life/_api/reactions/?abbreviation=" + i)
+                "https://www.vmh.life/_api/reactions/?abbreviation=" + i
+            )
 
             vmh_json = vmh_res.content.decode("utf-8")
             vmh_confidence = json.loads(vmh_json)
             score = 0
-            if vmh_res.status_code == 200 and len(vmh_confidence['results']):
-                #print(vmh_res.status_code)
+            if vmh_res.status_code == 200 and len(vmh_confidence["results"]):
+                # print(vmh_res.status_code)
 
                 # replace None to 0
-                if vmh_confidence['results'][0]['mcs'] is None:
-                    vmh_confidence['results'][0]['mcs'] = 0
+                if vmh_confidence["results"][0]["mcs"] is None:
+                    vmh_confidence["results"][0]["mcs"] = 0
 
                 if r.id in list(confidence_scores.keys()):
-                    print('ALREADY IN', r.id)
+                    print("ALREADY IN", r.id)
 
                 # store confidence scores to the corresponding 'initial' identifier (found in BiGG model)
-                score = vmh_confidence['results'][0]['mcs']
-                print('Confidence scores:',vmh_confidence['results'][0]['mcs'],i)
+                score = vmh_confidence["results"][0]["mcs"]
+                print("Confidence scores:", vmh_confidence["results"][0]["mcs"], i)
                 break
 
-        print(r.id, 'successfull')
+        print(r.id, "successfull")
         confidence_scores[r.id] = score
-        c+=1
+        c += 1
 
     except:
         confidence_scores[r.id] = 500
-        print('rxn [%s] not found' % r.id)
-        print('-------------------')
-        c+=1
+        print("rxn [%s] not found" % r.id)
+        print("-------------------")
+        c += 1
 
-print('Database calls are done ...')
+print("Database calls are done ...")
 
-print('Dictionary with confidence scores:', confidence_scores)
-print('c',c)
+print("Dictionary with confidence scores:", confidence_scores)
+print("c", c)
 
 # ##################
 # ## Save File #####
 # ##################
-print('Saving output file ... ')
+print("Saving output file ... ")
 # convert dictionary to dataframe for easier storing
-confscores_df = pd.DataFrame(list(confidence_scores.items()), columns=['Reaction ID', 'Confidence Score'])
-confscores_df.to_csv('Recon2_confidence_scores.csv', index=False)
+confscores_df = pd.DataFrame(
+    list(confidence_scores.items()), columns=["Reaction ID", "Confidence Score"]
+)
+confscores_df.to_csv("Recon2_confidence_scores.csv", index=False)
 
-print('len conf scores', len(confscores_df['Confidence Score']))
-print('Retrieval of confidence scores: DONE ...')
+print("len conf scores", len(confscores_df["Confidence Score"]))
+print("Retrieval of confidence scores: DONE ...")

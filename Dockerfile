@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Work directory inside the container
 WORKDIR /workspace
 
-# COPY env files into /tmp
+# COPY env file into /tmp
 COPY envs/ /tmp/env_specs/
 
 # Copying the entire project from prj root
@@ -22,15 +22,12 @@ COPY . /workspace
 # permissions to allow writing
 RUN chown -R $MAMBA_USER:$MAMBA_USER /workspace
 
-# Create all conda environments, install base utils, install cli, and clean up in one layer
-RUN micromamba create -y -n scanpy_legacy -f /tmp/env_specs/scanpy_env.yml && \
-    micromamba create -y -n cplex_aman_new -f /tmp/env_specs/cplex_env.yml && \
-    micromamba create -y -n gecko_aman    -f /tmp/env_specs/gecko_env.yml    && \
-    micromamba run -n gecko_aman pip install --force-reinstall --no-cache-dir \
-        git+https://github.com/ginkgobioworks/geckopy.git && \
-    micromamba run -n cplex_aman_new pip install "numpy<2" && \
-    micromamba install -y python=3.10 pyyaml rich typer prefect && \
-    micromamba run -n base python -m pip install -e . && \
+# Create the gemcon env, pin troppo/cobamp without dep resolution
+# (cobamp 0.2.1 has a stale numpy pin), install the CLI, clean up.
+RUN micromamba create -y -n gemcon -f /tmp/env_specs/environment.yml && \
+    micromamba run -n gemcon pip install --no-deps --force-reinstall \
+        troppo==0.0.7 cobamp==0.2.1 && \
+    micromamba run -n gemcon python -m pip install -e . && \
     micromamba clean -afy && \
     rm -rf /tmp/env_specs
 
@@ -38,11 +35,11 @@ RUN micromamba create -y -n scanpy_legacy -f /tmp/env_specs/scanpy_env.yml && \
 ENV DO_NOT_TRACK=1
 ENV PREFECT_LOGGING_LEVEL=ERROR
 
-# Activate; ## To have an environment active during a RUN command
+# Activate gemcon during RUN commands (and at container start)
 ENV MAMBA_DOCKERFILE_ACTIVATE=1
+ENV ENV_NAME=gemcon
 
 # revert
 USER $MAMBA_USER
 
-# No ENTRYPOINT since multiple envs
 CMD ["bash"]

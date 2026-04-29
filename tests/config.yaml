@@ -1,0 +1,24 @@
+model_config:
+  objective_reaction: "R1"
+
+output:
+  models_dir: "./models"
+
+data_dir: "data/data_processed"
+
+gimme:
+  solver: "GLPK"
+
+tinit:
+  solver: "GLPK"
+  essential_reactions:
+    - "R1"
+
+corda:
+  solver: "glpk"
+
+fastcore:
+  solver: "glpk"
+
+imat:
+  solver: "GLPK"

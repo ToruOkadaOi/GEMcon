@@ -8,12 +8,12 @@ celltype: ""
 gtf: ./data/data_raw/gencode.v49.annotation.gtf
 
 ## metabolic model path (currently tested with Human-GEM)
-model: ./Human-GEM/model/Human-GEM.xml
+model: ../Human-GEM/model/Human-GEM.xml
 # model: ./Recon3D.xml
 
 # config for Human-GEM
 model_config:
-  objective_reaction: "MAR02388"
+  objective_reaction: "MAR13082"
   alt_transcript_pattern: '__COBAMPGPRDOT__[0-9]{1}'
 
 ## config for RECOND3D

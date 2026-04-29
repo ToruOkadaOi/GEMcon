@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gemcon"
-version = "0.1.0"
+version = "0.3.0"
 description = "Transcriptomic and proteomic based metabolic model contextualized"
 authors = [
     {name = "Aman Nalakath", email = "aman.nalakath@tum.de"}
@@ -15,7 +15,6 @@ license = {text = "GPL-3.0"}
 
 dependencies = [
     "typer>=0.17.0",
-    "prefect>=3.0.0",
     "rich>=13.0.0",
     "pyyaml>=6.0.0",
 ]

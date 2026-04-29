@@ -28,13 +28,13 @@ else:
         print(f"Using auto-detected file: {choice}")
 
 basename = os.path.basename(choice)
-f_prefix = basename.split('.')[0]
+f_prefix = basename.split(".")[0]
 
 adata = sc.read_h5ad(f"{choice}")
 
-print('check appropriate model at https://www.celltypist.org/models')
+print("check appropriate model at https://www.celltypist.org/models")
 
-print(celltypist.models.models_description()) # cache check?
+print(celltypist.models.models_description())  # cache check?
 
 choice = input("\nChoose which model to proceed with: e.g Immune_All_Low.pkl: ")
 if not choice.endswith(".pkl"):
@@ -54,11 +54,15 @@ adata.X = adata.layers["normed_log"].copy()
 predictions = annotate(adata, model=model, majority_voting=True)
 
 ## how i did it
-collapsed = predictions.predicted_labels.groupby(level=0)['majority_voting'].first() #groups using cell index(first col), followed by taking majority voting col. and selecting the first element(same for all)
-  # check -> collapsed.values
+collapsed = predictions.predicted_labels.groupby(
+    level=0
+)[
+    "majority_voting"
+].first()  # groups using cell index(first col), followed by taking majority voting col. and selecting the first element(same for all)
+# check -> collapsed.values
 
 # add predicted labels to adata.obs
-adata.obs['cell_type'] = adata.obs_names.map(collapsed)
+adata.obs["cell_type"] = adata.obs_names.map(collapsed)
 
 # save
 outdir = "data/data_processed/processed"
