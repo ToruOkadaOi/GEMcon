@@ -16,6 +16,9 @@ import yaml
 
 # ---
 ## --help
+@pytest.mark.skipif(
+    os.getenv("CI") == "true", reason="CI skip — full env not installed"
+)
 def test_help_runs():
     result = subprocess.run(
         ["python", "-m", "scripts.flow", "--help"], capture_output=True
