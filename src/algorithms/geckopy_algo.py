@@ -119,7 +119,7 @@ class GeckopyAlgorithm(BaseAlgorithm):
             # Map to UniProt
             map_df = self._map_to_uniprot(ensps)
             merged = df.merge(map_df, on="ENSP", how="left")
-            print(f"Total rows mapped: {merged['UniProt'].notna().sum()}")
+            print(f"[geckopy] PaxDB rows: {len(df)}, mapped to UniProt: {merged['UniProt'].notna().sum()}")
 
             prot = merged[["UniProt", "abundance"]].copy()
             prot = prot.dropna(subset=["UniProt"])
@@ -150,6 +150,54 @@ class GeckopyAlgorithm(BaseAlgorithm):
 
         return prot
 
+    # --- stats helpers ---
+
+    def _count_active_reactions(self, model, tol=1e-9):
+        """
+        Count reactions whose effective bounds allow non-zero flux.
+        For enzyme-constrained models, reactions can become 'blocked' by
+        protein availability constraints even if their original bounds were open.
+        """
+        active = 0
+        blocked = 0
+        for rxn in model.reactions:
+            if abs(rxn.lower_bound) < tol and abs(rxn.upper_bound) < tol:
+                blocked += 1
+            else:
+                active += 1
+        return active, blocked
+
+    def _print_model_stats(self, base_model, ec_model, prot_df):
+        """Print summary statistics comparing base model to enzyme-constrained model"""
+        # Basic counts
+        base_rxn_count = len(base_model.reactions)
+        ec_rxn_count = len(ec_model.reactions)
+        base_met_count = len(base_model.metabolites)
+        ec_met_count = len(ec_model.metabolites)
+
+        # Active/blocked breakdown for the EC model
+        ec_active, ec_blocked = self._count_active_reactions(ec_model)
+
+        # Protein constraints applied
+        n_proteins = len(prot_df)
+        n_proteins_in_model = sum(
+            1 for pid in prot_df["protein_gecko_id"]
+            if pid in {m.id for m in ec_model.metabolites}
+        )
+
+        print()
+        print("=" * 60)
+        print("Geckopy enzyme-constrained model summary")
+        print("=" * 60)
+        print(f"Base ec-model reactions:        {base_rxn_count}")
+        print(f"Constrained ec-model reactions: {ec_rxn_count}")
+        print(f"  - active (can carry flux):    {ec_active}")
+        print(f"  - blocked (lb=ub=0):          {ec_blocked}")
+        print(f"Metabolites: {base_met_count} -> {ec_met_count}")
+        print(f"Protein abundances supplied:    {n_proteins}")
+        print(f"  - matched in model:           {n_proteins_in_model}")
+        print("=" * 60)
+
     # --- run ---
 
     def run(self):
@@ -165,7 +213,7 @@ class GeckopyAlgorithm(BaseAlgorithm):
 
         # Detect format and prepare protein data
         fmt = self._detect_format()
-        print(f"Using abundance format: {fmt}")
+        print(f"[geckopy] Using abundance format: {fmt}")
         prot = self._prepare_protein_df(fmt)
 
         # Apply enzyme constraints
@@ -179,7 +227,12 @@ class GeckopyAlgorithm(BaseAlgorithm):
             water=water,
         )
 
-        print(f"Objective value: {ec_model_exp.slim_optimize()}")
+        # Stats
+        self._print_model_stats(self.model, ec_model_exp, prot)
+
+        # Optimize and report
+        objective_value = ec_model_exp.slim_optimize()
+        print(f"Objective value: {objective_value}")
 
         # Export
         base = os.path.splitext(os.path.basename(self.expr_path))[0]
