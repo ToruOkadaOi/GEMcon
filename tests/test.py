@@ -18,7 +18,7 @@ import yaml
 ## --help
 def test_help_runs():
     result = subprocess.run(
-        ["python", "scripts/flow.py", "--help"], capture_output=True
+        ["python", "-m", "scripts.flow", "--help"], capture_output=True
     )
     assert result.returncode == 0
 
@@ -46,7 +46,7 @@ def test_fetches_data_when_no_input():
         result = subprocess.run(
             [
                 "python",
-                "scripts/flow.py",
+                "-m", "scripts.flow",
                 "--branch",
                 "transcriptomic",
                 "--task",
